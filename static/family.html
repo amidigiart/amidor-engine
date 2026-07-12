@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AmiDor — Zona familiei</title>
+<style>
+  *{box-sizing:border-box;margin:0}
+  body{font-family:system-ui,Segoe UI,sans-serif;background:#f4f6f4;color:#1d2b22;
+       padding:24px;max-width:1000px;margin:auto}
+  h1{font-size:1.4rem} .sub{color:#5a6b60;font-size:.9rem;margin:6px 0 18px}
+  .card{background:#fff;border:1px solid #d8e2da;border-radius:12px;padding:18px;margin-bottom:16px}
+  input,button{padding:10px 14px;font-size:1rem;border-radius:8px;border:1px solid #b9c9bd}
+  button{background:#1f5fb0;color:#fff;border:none;cursor:pointer;margin-left:8px}
+  table{width:100%;border-collapse:collapse;font-size:.92rem}
+  th,td{padding:9px 10px;border-bottom:1px solid #e3ece5;text-align:left;vertical-align:top}
+  tr.flag{background:#fff4e5} tr.scam{background:#fdece9}
+  .ok{color:#1a7a3a;font-weight:600}.bad{color:#a33;font-weight:600}
+  .pill{display:inline-block;padding:2px 8px;border-radius:99px;font-size:.75rem;background:#e8f0ea}
+  .note{color:#5a6b60;font-size:.9rem}
+</style>
+</head>
+<body>
+<h1>AmiDor — Zona familiei</h1>
+<div class="sub">Jurnal semnat criptografic. Vizibil DOAR dacă persoana și-a dat consimțământul (GDPR + demnitate).</div>
+
+<div class="card">
+  <label>PIN familie: <input id="pin" type="password"></label>
+  <button onclick="load()">Deschide</button>
+  <span id="meta" class="note"></span>
+</div>
+
+<div class="card"><table id="t">
+  <thead><tr><th>Ora</th><th>Persoana a spus</th><th>AmiDor</th><th>Situație</th><th>Semnătură</th></tr></thead>
+  <tbody></tbody>
+</table></div>
+
+<script>
+async function load(){
+  const pin=document.getElementById('pin').value;
+  const r=await fetch('/api/family/log?pin='+encodeURIComponent(pin));
+  if(!r.ok){alert('PIN greșit');return;}
+  const d=await r.json();
+  const meta=document.getElementById('meta');
+  if(!d.consent){meta.textContent=d.note||'Consimțământ neacordat — jurnal dezactivat.';
+    document.querySelector('#t tbody').innerHTML='';return;}
+  meta.textContent='Cheie publică: '+(d.notary_pubkey||'').slice(0,20)+'…';
+  const tb=document.querySelector('#t tbody');tb.innerHTML='';
+  for(const t of d.turns){
+    const tr=document.createElement('tr');
+    if((t.scam||[]).length)tr.className='scam'; else if(t.flag_family)tr.className='flag';
+    const sit = (t.decision==='scam-interrupt')?'⚠ posibilă înșelăciune':
+                (t.decision==='disagree')?'surse neconcordante':
+                (t.flag_family?'de urmărit':'—');
+    tr.innerHTML=`<td>${t.ts||''}</td><td>${esc(t.user)}</td><td>${esc(t.reply)}</td>
+      <td>${sit}${(t.scam||[]).length?' <span class="pill">'+t.scam.join(', ')+'</span>':''}</td>
+      <td class="${t.signature_valid?'ok':'bad'}">${t.signature_valid?'validă ✓':'INVALIDĂ ✗'}</td>`;
+    tb.appendChild(tr);
+  }
+}
+const esc=s=>String(s??'').replace(/</g,'&lt;');
+</script>
+</body>
+</html>
