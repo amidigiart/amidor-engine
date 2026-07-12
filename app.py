@@ -22,6 +22,8 @@ from engine import DualEngine
 from i18n import bundle, t, available, DEFAULT as DEFAULT_LANG
 from scam_shield import detect_scam, scam_response
 from voice_local import tts_available, synthesize
+from alerts import build_from_env, AlertEvent
+import threading
 from ukbe_core.notary import generate_keypair, notarize, verify, NotarizedRecord
 
 BASE = Path(__file__).parent
@@ -74,6 +76,15 @@ def _keys():
     return pr, pu
 PRIV, PUB = _keys()
 
+# Alerte catre familie (Sprint 4). Canalele se configureaza din mediu; log-ul
+# e mereu activ. Alertele NU contin continutul conversatiei (minimizare GDPR).
+ALERTS = build_from_env(os.environ, str(DATA / "alerts.jsonl"))
+ALERT_ON_SCAM = os.getenv("ALERT_ON_SCAM", "true") == "true"
+
+def _fire_alert(ev: AlertEvent):
+    # in thread separat: protectia/raspunsul utilizatorului are prioritate
+    threading.Thread(target=ALERTS.dispatch, args=(ev,), daemon=True).start()
+
 
 def _log(entry: dict):
     """Jurnal semnat — scris DOAR daca varstnicul si-a dat consimtamantul
@@ -86,7 +97,7 @@ def _log(entry: dict):
         f.write(json.dumps({"entry": entry, "record": rec.to_dict()}, ensure_ascii=False) + "\n")
 
 
-app = FastAPI(title="AmiDor", version="0.3.0")
+app = FastAPI(title="AmiDor", version="0.4.0")
 
 
 class Msg(BaseModel):
@@ -104,7 +115,7 @@ def family_ui():
 
 @app.get("/api/health")
 def health():
-    return {"service": "amidor", "version": "0.3.0",
+    return {"service": "amidor", "version": "0.4.0",
             "engine": "dual anti-confabulation + REAI gate",
             "scam_shield": "v0", "journal_consent": CONSENT,
             "notary_pubkey": PUB.hex()}
@@ -154,6 +165,10 @@ def chat(inp: Msg, request: Request):
         _log({"ts": time.strftime("%Y-%m-%dT%H:%M:%S"), "user": msg,
               "reply": warn, "decision": "scam-interrupt", "lang": lang,
               "scam": scam.categories, "flag_family": True})
+        if ALERT_ON_SCAM:
+            _fire_alert(AlertEvent(kind="scam_likely",
+                        at=time.strftime("%H:%M, %d %b %Y"),
+                        category=",".join(scam.categories), lang=lang))
         return {"reply": warn, "decision": "scam-interrupt",
                 "scam_warning": True, "flag_family": True, "lang": lang}
 
@@ -168,6 +183,14 @@ def chat(inp: Msg, request: Request):
             "scam_warning": scam.risk.value != "none",
             "flag_family": flag_family, "lang": lang,
             "speech": t(lang, "speech")}
+
+
+@app.get("/api/family/alerts")
+def family_alerts(pin: str):
+    if pin != FAMILY_PIN:
+        raise HTTPException(403, "PIN greșit")
+    return {"channels": [getattr(c, "name", "?") for c in ALERTS.channels],
+            "cooldown_s": ALERTS.cooldown, "recent_errors": ALERTS.errors[-5:]}
 
 
 @app.get("/api/family/log")
