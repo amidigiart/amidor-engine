@@ -26,19 +26,15 @@ from adapters import AdapterError
 from concordance import check_concordance
 from register_gate import RegisterGate, AFFIRM, ASK, REANCHOR
 
-HONEST_DISAGREEMENT = (
-    "Nu pot să-ți dau un răspuns sigur aici — sursele mele interne nu spun "
-    "același lucru, iar decât să ghicesc, prefer să fiu sincer. {hint}"
-    "Putem reformula întrebarea, sau o verificăm împreună cu cineva de încredere."
-)
-NUMERIC_HINT = ("Diferența e la cifre — iar la cifre nu am voie să "
-                "aproximez. ")
-REANCHOR_REPLY = (
-    "Hai să ne oprim o clipă și să ne asigurăm că suntem în pas: "
-    "am înțeles bine ce mă întrebi? Spune-mi cu alte cuvinte, te rog."
-)
-UNCORROBORATED_TAG = ("\n\n(Notă: acest răspuns vine de la o singură sursă "
-                      "și nu a putut fi verificat încrucișat acum.)")
+# Textele motorului vin din i18n (Sprint 3); constantele raman ca alias RO
+# pentru compatibilitate cu testele si integrarile existente.
+from i18n import bundle as i18n_bundle, DEFAULT as I18N_DEFAULT
+
+_RO = i18n_bundle("ro")
+HONEST_DISAGREEMENT = _RO["honest_disagreement"]
+NUMERIC_HINT = _RO["numeric_hint"]
+REANCHOR_REPLY = _RO["reanchor_reply"]
+UNCORROBORATED_TAG = _RO["uncorroborated_tag"]
 
 
 @dataclass
@@ -55,11 +51,14 @@ class DualResult:
 
 class DualEngine:
     def __init__(self, adapter_a, adapter_b, system_prompt: str,
-                 threshold: float = 0.45, gate: RegisterGate | None = None):
+                 threshold: float = 0.45, gate: RegisterGate | None = None,
+                 locale: str = I18N_DEFAULT):
         self.a, self.b = adapter_a, adapter_b
         self.system_prompt = system_prompt
         self.threshold = threshold
         self.gate = gate or RegisterGate()
+        self.locale = locale
+        self.tx = i18n_bundle(locale)   # toate textele motorului, in limba ceruta
 
     def ask(self, user_msg: str) -> DualResult:
         t0 = time.time()
@@ -67,13 +66,14 @@ class DualEngine:
         mode = state["mode"]
 
         if mode == REANCHOR:
-            return DualResult(reply=REANCHOR_REPLY, decision="reanchor",
+            return DualResult(reply=self.tx["reanchor_reply"], decision="reanchor",
                               mode=mode, reason="coerenta prabusita - "
                               "nu interogam modelele inainte de re-ancorare",
                               latency_s=round(time.time() - t0, 2),
                               engine_state=state)
 
-        system = self.system_prompt + state["directive"]
+        directive = self.tx["ask_directive"] if mode == ASK else ""
+        system = self.system_prompt + directive
         with ThreadPoolExecutor(max_workers=2) as ex:
             fa = ex.submit(self.a.complete, system, user_msg)
             fb = ex.submit(self.b.complete, system, user_msg)
@@ -84,8 +84,7 @@ class DualEngine:
 
         if isinstance(ans_a, Exception) and isinstance(ans_b, Exception):
             return DualResult(
-                reply=("Am o problemă tehnică chiar acum și nu vreau să "
-                       "improvizez. Încearcă, te rog, puțin mai târziu."),
+                reply=self.tx["degraded_reply"],
                 decision="degraded", mode=mode,
                 reason=f"ambele modele indisponibile: {ans_a}; {ans_b}",
                 answers={}, latency_s=round(time.time() - t0, 2),
@@ -95,7 +94,7 @@ class DualEngine:
             good = ans_b if isinstance(ans_a, Exception) else ans_a
             bad = ans_a if isinstance(ans_a, Exception) else ans_b
             return DualResult(
-                reply=good + UNCORROBORATED_TAG,
+                reply=good + self.tx["uncorroborated_tag"],
                 decision="degraded", mode=mode,
                 reason=f"un model indisponibil: {bad}",
                 answers={k: v for k, v in answers.items()
@@ -110,8 +109,8 @@ class DualEngine:
                               latency_s=round(time.time() - t0, 2),
                               engine_state=state)
 
-        hint = NUMERIC_HINT if conc.numeric_conflict else ""
-        return DualResult(reply=HONEST_DISAGREEMENT.format(hint=hint),
+        hint = self.tx["numeric_hint"] if conc.numeric_conflict else ""
+        return DualResult(reply=self.tx["honest_disagreement"].format(hint=hint),
                           decision="disagree", mode=mode,
                           concordance=round(conc.score, 3),
                           reason=conc.reason, answers=answers,

@@ -44,19 +44,29 @@
 <body>
 <header>
   <div class="dot" aria-hidden="true"></div>
-  <div>
+  <div style="flex:1">
     <h1>AmiDor</h1>
-    <div class="sub">prietenul tău digital · sunt un program, sunt aici pentru tine</div>
+    <div class="sub" id="tagline">prietenul tău digital · sunt un program, sunt aici pentru tine</div>
   </div>
+  <select id="lang" aria-label="Limba / Language"
+          style="font-size:1.05rem;padding:10px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink)">
+    <option value="ro">Română</option>
+    <option value="en">English</option>
+  </select>
+  <button type="button" id="spk" title="Citește răspunsurile cu voce tare" aria-pressed="false"
+          style="font-size:1.4rem;background:var(--panel);border:2px solid var(--line);border-radius:12px;min-width:64px">🔇</button>
 </header>
 
 <div id="chat" aria-live="polite"></div>
 
 <form id="f">
+  <button type="button" id="mic" title="Țineți apăsat și vorbiți"
+          style="min-width:76px;font-size:1.6rem;background:var(--panel);color:var(--ink);border:2px solid var(--line)">🎤</button>
   <input id="inp" autocomplete="off" maxlength="500"
-         placeholder="Scrieți aici… sau spuneți-mi cum vă simțiți" aria-label="Mesajul dumneavoastră">
+         placeholder="Scrieți aici… sau țineți apăsat microfonul" aria-label="Mesajul dumneavoastră">
   <button id="go">Trimite</button>
 </form>
+<div id="privnote" style="display:none;max-width:820px;margin:0 auto;padding:0 20px 8px;color:var(--soft);font-size:.85rem"></div>
 
 <footer>
   AmiDor v0.2 — nu sunt medic și nu dau sfaturi medicale · nu cer niciodată parole sau coduri
@@ -65,25 +75,83 @@
 
 <script>
 const chat=document.getElementById('chat'),f=document.getElementById('f'),
-      inp=document.getElementById('inp'),go=document.getElementById('go');
+      inp=document.getElementById('inp'),go=document.getElementById('go'),
+      langSel=document.getElementById('lang'),spk=document.getElementById('spk'),
+      mic=document.getElementById('mic'),priv=document.getElementById('privnote');
+let LANG=localStorage.getItem('amidor_lang')||'ro',
+    SPEAK=localStorage.getItem('amidor_speak')==='1',
+    SPEECH='ro-RO', LOCAL_TTS=false;
+const UI={ro:{tag:'prietenul tău digital · sunt un program, sunt aici pentru tine',
+              ph:'Scrieți aici… sau țineți apăsat microfonul',think:'mă gândesc…',
+              err:'Am o mică problemă tehnică. Încercați din nou, vă rog?',
+              priv:'🔒 Vocea prin browser poate trimite ce spuneți către Google/Apple. Pe serverul propriu, vocea rămâne locală.'},
+          en:{tag:'your digital friend · I am a program, here for you',
+              ph:'Type here… or hold the microphone',think:'thinking…',
+              err:'I have a small technical problem. Please try again.',
+              priv:'🔒 Browser voice may send audio to Google/Apple. On your own server, voice stays local.'}};
+langSel.value=LANG;
+function applyLang(){const u=UI[LANG];document.getElementById('tagline').textContent=u.tag;
+  inp.placeholder=u.ph;document.documentElement.lang=LANG;}
+function speak(text){
+  if(!SPEAK)return;
+  const clean=text.replace(/\*\*/g,'');
+  if(LOCAL_TTS){
+    const a=new Audio('/api/tts?lang='+LANG+'&text='+encodeURIComponent(clean.slice(0,400)));
+    a.play().catch(()=>browserSpeak(clean));
+  } else browserSpeak(clean);
+}
+function browserSpeak(text){
+  try{speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);u.lang=SPEECH;u.rate=0.92;
+    speechSynthesis.speak(u);}catch(_){}
+}
+spk.addEventListener('click',()=>{SPEAK=!SPEAK;
+  localStorage.setItem('amidor_speak',SPEAK?'1':'0');
+  spk.textContent=SPEAK?'🔊':'🔇';spk.setAttribute('aria-pressed',SPEAK);
+  if(!SPEAK)try{speechSynthesis.cancel()}catch(_){}});
+if(SPEAK)spk.textContent='🔊';
+langSel.addEventListener('change',()=>{LANG=langSel.value;
+  localStorage.setItem('amidor_lang',LANG);applyLang();chat.innerHTML='';greet();});
+// STT: tineti apasat si vorbiti (Web Speech API; nota de confidentialitate afisata)
+let rec=null;
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!SR){mic.style.display='none';}
+function startRec(){if(!SR)return;
+  priv.style.display='block';priv.textContent=UI[LANG].priv;
+  rec=new SR();rec.lang=SPEECH;rec.interimResults=false;
+  rec.onresult=e=>{inp.value=e.results[0][0].transcript;f.requestSubmit();};
+  rec.onerror=()=>{mic.textContent='🎤';};
+  rec.onend=()=>{mic.textContent='🎤';};
+  mic.textContent='🔴';rec.start();}
+function stopRec(){try{rec&&rec.stop()}catch(_){}}
+mic.addEventListener('mousedown',startRec);mic.addEventListener('mouseup',stopRec);
+mic.addEventListener('touchstart',e=>{e.preventDefault();startRec();});
+mic.addEventListener('touchend',e=>{e.preventDefault();stopRec();});
 function add(cls,html){const d=document.createElement('div');d.className='msg '+cls;
   d.innerHTML=html;chat.appendChild(d);chat.scrollTop=chat.scrollHeight;return d;}
 async function greet(){
-  try{const r=await fetch('/api/greeting');const d=await r.json();
-    add('ami','<b>AmiDor:</b> '+d.reply);}catch(_){}
+  try{
+    const ls=await fetch('/api/langs');const L=await ls.json();
+    LOCAL_TTS=!!(L.local_tts&&L.local_tts.piper);
+    const r=await fetch('/api/greeting?lang='+LANG);const d=await r.json();
+    SPEECH=d.speech||SPEECH;
+    add('ami','<b>AmiDor:</b> '+d.reply);speak(d.reply);
+  }catch(_){}
 }
-greet();
+applyLang();greet();
 f.addEventListener('submit',async e=>{
   e.preventDefault();const m=inp.value.trim();if(!m)return;
   add('me',m.replace(/</g,'&lt;'));inp.value='';go.disabled=true;
-  const w=add('ami','<b>AmiDor:</b> <i>mă gândesc…</i>');
+  const w=add('ami','<b>AmiDor:</b> <i>'+UI[LANG].think+'</i>');
   try{
     const r=await fetch('/api/chat',{method:'POST',
-      headers:{'Content-Type':'application/json'},body:JSON.stringify({message:m})});
+      headers:{'Content-Type':'application/json'},body:JSON.stringify({message:m,lang:LANG})});
     const d=await r.json();
     w.innerHTML='<b>AmiDor:</b> '+(d.reply||'…').replace(/</g,'&lt;').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
     if(d.scam_warning)w.classList.add('warn');
-  }catch(_){w.innerHTML='<b>AmiDor:</b> Am o mică problemă tehnică. Încercați din nou, vă rog?';}
+    if(d.speech)SPEECH=d.speech;
+    speak(d.reply||'');
+  }catch(_){w.innerHTML='<b>AmiDor:</b> '+UI[LANG].err;}
   go.disabled=false;inp.focus();
 });
 </script>

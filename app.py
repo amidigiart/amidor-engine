@@ -2,7 +2,7 @@
 """
 AmiDor — aplicatia companion (Sprint 2): scam-shield + motor dual + persona,
 cu chat prietenos pentru varstnici si panou de familie (consimtamant + jurnal
-semnat). Voce: Sprint 3.
+semnat) + i18n (RO/EN) + voce (STT browser / TTS local piper).
 
 Config prin mediu (vezi .env.example). Fara chei hardcodate.
 """
@@ -19,8 +19,9 @@ from pydantic import BaseModel
 
 from adapters import OpenAICompatAdapter
 from engine import DualEngine
-from persona import AMIDOR_SYSTEM, AMIDOR_GREETING
+from i18n import bundle, t, available, DEFAULT as DEFAULT_LANG
 from scam_shield import detect_scam, scam_response
+from voice_local import tts_available, synthesize
 from ukbe_core.notary import generate_keypair, notarize, verify, NotarizedRecord
 
 BASE = Path(__file__).parent
@@ -48,7 +49,14 @@ B = OpenAICompatAdapter(
 if ENV == "prod" and FAMILY_PIN == "1234":
     raise RuntimeError("Refuz pornirea in productie cu PIN implicit. Seteaza AMIDOR_FAMILY_PIN.")
 
-ENGINE = DualEngine(A, B, system_prompt=AMIDOR_SYSTEM, threshold=CONC_THRESHOLD)
+# Un motor per limba (gate/dinamica proprie per sesiune de limba)
+_ENGINES: dict[str, DualEngine] = {}
+def engine_for(lang: str) -> DualEngine:
+    lang = lang if lang in {l['code'] for l in available()} else DEFAULT_LANG
+    if lang not in _ENGINES:
+        _ENGINES[lang] = DualEngine(A, B, system_prompt=bundle(lang)['system_prompt'],
+                                    threshold=CONC_THRESHOLD, locale=lang)
+    return _ENGINES[lang]
 
 _RATE: dict[str, list] = {}
 def _rate_ok(ip: str, mx=25, win=60.0) -> bool:
@@ -78,11 +86,12 @@ def _log(entry: dict):
         f.write(json.dumps({"entry": entry, "record": rec.to_dict()}, ensure_ascii=False) + "\n")
 
 
-app = FastAPI(title="AmiDor", version="0.2.0")
+app = FastAPI(title="AmiDor", version="0.3.0")
 
 
 class Msg(BaseModel):
     message: str
+    lang: str = DEFAULT_LANG
 
 
 @app.get("/")
@@ -95,14 +104,33 @@ def family_ui():
 
 @app.get("/api/health")
 def health():
-    return {"service": "amidor", "version": "0.2.0",
+    return {"service": "amidor", "version": "0.3.0",
             "engine": "dual anti-confabulation + REAI gate",
             "scam_shield": "v0", "journal_consent": CONSENT,
             "notary_pubkey": PUB.hex()}
 
 @app.get("/api/greeting")
-def greeting():
-    return {"reply": AMIDOR_GREETING}
+def greeting(lang: str = DEFAULT_LANG):
+    return {"reply": t(lang, "greeting"), "lang": lang,
+            "speech": t(lang, "speech")}
+
+
+@app.get("/api/langs")
+def langs():
+    return {"default": DEFAULT_LANG, "available": available(),
+            "local_tts": tts_available()}
+
+
+@app.get("/api/tts")
+def tts(text: str, lang: str = DEFAULT_LANG):
+    """TTS local (piper) — calea GDPR-curata pentru deploy pe server.
+    501 daca piper nu e configurat; browserul foloseste atunci speechSynthesis
+    (cu nota de confidentialitate afisata)."""
+    wav = synthesize(text[:500], lang)
+    if wav is None:
+        raise HTTPException(501, "TTS local neconfigurat (seteaza PIPER_BIN si PIPER_VOICE_<LANG>)")
+    from fastapi.responses import Response
+    return Response(content=wav, media_type="audio/wav")
 
 
 @app.post("/api/chat")
@@ -117,26 +145,29 @@ def chat(inp: Msg, request: Request):
         raise HTTPException(400, "mesaj prea lung")
 
     t0 = time.time()
-    # 1) SCAM-SHIELD inaintea oricarui model
+    lang = inp.lang if inp.lang else DEFAULT_LANG
+    # 1) SCAM-SHIELD inaintea oricarui model (mesajul de avertizare: localizat)
     scam = detect_scam(msg)
     sresp = scam_response(scam)
     if sresp and not sresp["continue_flow"]:
+        warn = t(lang, "scam_interrupt")
         _log({"ts": time.strftime("%Y-%m-%dT%H:%M:%S"), "user": msg,
-              "reply": sresp["message"], "decision": "scam-interrupt",
+              "reply": warn, "decision": "scam-interrupt", "lang": lang,
               "scam": scam.categories, "flag_family": True})
-        return {"reply": sresp["message"], "decision": "scam-interrupt",
-                "scam_warning": True, "flag_family": True}
+        return {"reply": warn, "decision": "scam-interrupt",
+                "scam_warning": True, "flag_family": True, "lang": lang}
 
-    # 2) MOTORUL DUAL
-    r = ENGINE.ask(msg)
+    # 2) MOTORUL DUAL, in limba utilizatorului
+    r = engine_for(lang).ask(msg)
     flag_family = bool(sresp and sresp["flag_family"]) or r.decision in ("disagree",)
     _log({"ts": time.strftime("%Y-%m-%dT%H:%M:%S"), "user": msg,
           "reply": r.reply, "decision": r.decision, "mode": r.mode,
-          "concordance": r.concordance, "scam": scam.categories,
+          "concordance": r.concordance, "scam": scam.categories, "lang": lang,
           "flag_family": flag_family, "latency_s": r.latency_s})
     return {"reply": r.reply, "decision": r.decision,
             "scam_warning": scam.risk.value != "none",
-            "flag_family": flag_family}
+            "flag_family": flag_family, "lang": lang,
+            "speech": t(lang, "speech")}
 
 
 @app.get("/api/family/log")
