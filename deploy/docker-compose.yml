@@ -1,0 +1,39 @@
+# AmiDor — stack de productie self-host (app + model local B + HTTPS).
+# Model A = API EU (ex. Mistral, Franta) via .env; Model B = Ollama local (UE, pe VPS).
+# Porneste: docker compose up -d --build
+# Prima data: docker compose exec ollama ollama pull <model_B>
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - AMIDOR_ENV=prod
+      - MODEL_B_URL=http://ollama:11434/v1
+    volumes:
+      - amidor_data:/app/data      # jurnal semnat, chei notar, log alerte
+      # - ./voices:/voices:ro       # decomenteaza pt piper (voce locala GDPR-curata)
+    depends_on:
+      - ollama
+
+  ollama:                          # Model B local, in UE (pe acelasi VPS)
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    volumes:
+      - ollama_models:/root/.ollama
+
+  caddy:                           # HTTPS automat (Let's Encrypt) pt app.amidorai.com
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    depends_on: [app]
+
+volumes:
+  amidor_data:
+  ollama_models:
+  caddy_data:

@@ -35,6 +35,7 @@ ENV = os.getenv("AMIDOR_ENV", "dev")
 QID = os.getenv("QID", "1820209090023")
 FAMILY_PIN = os.getenv("AMIDOR_FAMILY_PIN", "1234")
 CONSENT = os.getenv("AMIDOR_JOURNAL_CONSENT", "false") == "true"  # consimtamant varstnic
+ACCESS_CODE = os.getenv("AMIDOR_ACCESS_CODE", "")  # poarta pt instante pilot publice
 CONC_THRESHOLD = float(os.getenv("AMIDOR_CONCORDANCE", "0.45"))
 
 # Doua modele, configurabile. Implicit: acelasi Ollama la 2 temperaturi
@@ -97,12 +98,13 @@ def _log(entry: dict):
         f.write(json.dumps({"entry": entry, "record": rec.to_dict()}, ensure_ascii=False) + "\n")
 
 
-app = FastAPI(title="AmiDor", version="0.4.0")
+app = FastAPI(title="AmiDor", version="0.5.0")
 
 
 class Msg(BaseModel):
     message: str
     lang: str = DEFAULT_LANG
+    access_code: str = ""
 
 
 @app.get("/")
@@ -115,7 +117,7 @@ def family_ui():
 
 @app.get("/api/health")
 def health():
-    return {"service": "amidor", "version": "0.4.0",
+    return {"service": "amidor", "version": "0.5.0",
             "engine": "dual anti-confabulation + REAI gate",
             "scam_shield": "v0", "journal_consent": CONSENT,
             "notary_pubkey": PUB.hex()}
@@ -129,7 +131,7 @@ def greeting(lang: str = DEFAULT_LANG):
 @app.get("/api/langs")
 def langs():
     return {"default": DEFAULT_LANG, "available": available(),
-            "local_tts": tts_available()}
+            "local_tts": tts_available(), "access_gated": bool(ACCESS_CODE)}
 
 
 @app.get("/api/tts")
@@ -149,6 +151,8 @@ def chat(inp: Msg, request: Request):
     ip = request.client.host if request.client else "?"
     if not _rate_ok(ip):
         raise HTTPException(429, "prea multe mesaje — ia o pauză scurtă")
+    if ACCESS_CODE and inp.access_code != ACCESS_CODE:
+        raise HTTPException(403, "cod de acces necesar (instanță pilot privată)")
     msg = inp.message.strip()
     if not msg:
         raise HTTPException(400, "mesaj gol")

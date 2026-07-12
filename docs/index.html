@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AmiDor — companion AI pentru vârstnici, care nu inventează și ferește de escroci</title>
+<meta name="description" content="Companion AI voice-first pentru vârstnici: motor dual anti-confabulație (două modele trebuie să concorde), scut anti-escrocherie, alerte pentru familie fără a trimite conversația, local-first și conform UE. Onest despre ce este și ce nu este.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://amidorai.com/#software",
+      "name": "AmiDor",
+      "description": "Voice-first AI companion for older adults: a dual-model anti-confabulation engine (two models must agree, or it says it is not sure), a scam shield, and family alerts that never share conversation content. Local-first, EU-compliant. Architecture prototype - not a finished product.",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "Linux, macOS, Windows",
+      "url": "https://amidorai.com",
+      "codeRepository": "https://github.com/amidigiart/amidor-engine",
+      "license": "https://www.gnu.org/licenses/agpl-3.0.html",
+      "inLanguage": ["ro", "en"],
+      "author": { "@id": "https://amidorai.com/#person" },
+      "isBasedOn": { "@id": "https://amidorai.com/#engine" }
+    },
+    {
+      "@type": "SoftwareSourceCode",
+      "@id": "https://amidorai.com/#engine",
+      "name": "amidor-engine",
+      "description": "Dual-model anti-confabulation engine gated by the REAI resonance equations.",
+      "codeRepository": "https://github.com/amidigiart/amidor-engine",
+      "license": "https://www.gnu.org/licenses/agpl-3.0.html",
+      "citation": { "@id": "https://amidorai.com/#paper" }
+    },
+    {
+      "@type": "ScholarlyArticle",
+      "@id": "https://amidorai.com/#paper",
+      "name": "Ghost Sensitivity Peaks in Adaptive Phase-Coupled Systems",
+      "sameAs": "https://doi.org/10.5281/zenodo.21269201",
+      "identifier": "10.5281/zenodo.21269201"
+    },
+    {
+      "@type": "Person",
+      "@id": "https://amidorai.com/#person",
+      "name": "Mihai Roșca",
+      "sameAs": ["https://orcid.org/0009-0001-1422-6209", "https://github.com/amidigiart"],
+      "email": "mailto:contact@kinderagi.com",
+      "jobTitle": "Independent Researcher",
+      "address": {"@type": "PostalAddress", "addressLocality": "Brăila", "addressCountry": "RO"}
+    }
+  ]
+}
+</script>
+<style>
+  :root{--bg:#f7f4ee;--panel:#fff;--ink:#20242a;--soft:#5a6472;--accent:#1f5fb0;
+        --warm:#c9662e;--line:#d8dae0}
+  @media (prefers-color-scheme: dark){
+    :root{--bg:#14171c;--panel:#1e2229;--ink:#f0f3f7;--soft:#aeb6c2;--line:#333a45}
+  }
+  *{box-sizing:border-box;margin:0}
+  body{font-family:Georgia,'Times New Roman',serif;background:var(--bg);color:var(--ink);
+       line-height:1.65}
+  .lang{position:fixed;top:14px;right:16px;z-index:9}
+  .lang button{background:var(--panel);color:var(--soft);border:1px solid var(--line);
+    padding:6px 12px;border-radius:8px;cursor:pointer;font-family:inherit}
+  .lang button.on{color:#fff;background:var(--accent);font-weight:700}
+  .wrap{max-width:840px;margin:auto;padding:24px 20px 60px}
+  header{text-align:center;padding:44px 0 12px}
+  .dot{width:70px;height:70px;border-radius:50%;margin:0 auto 16px;
+       background:radial-gradient(circle at 35% 30%,#8fc0ff,#1f5fb0);box-shadow:0 0 0 8px #1f5fb015}
+  h1{font-size:2.2rem} .tag{color:var(--warm);font-style:italic;margin-top:8px;font-size:1.1rem}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px 28px;margin:20px 0}
+  h2{color:var(--accent);font-size:1.3rem;margin-bottom:14px}
+  p{margin-bottom:12px} ul{margin:0 0 12px 22px} li{margin-bottom:8px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+  .card{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card b{color:var(--accent)}
+  code{font-family:ui-monospace,Consolas,monospace;background:var(--bg);padding:2px 7px;border-radius:6px;border:1px solid var(--line);font-size:.9em}
+  pre{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:16px;overflow-x:auto;font-size:.85rem;margin-bottom:12px}
+  a{color:var(--accent)} .warn{border-color:var(--warm)}
+  footer{text-align:center;color:var(--soft);font-size:.85rem;padding-top:26px}
+  footer a{color:var(--soft)}
+  .en{display:none} body.lang-en .en{display:block} body.lang-en .ro{display:none}
+  span.en{display:none} body.lang-en span.en{display:inline} body.lang-en span.ro{display:none}
+</style>
+</head>
+<body>
+<div class="lang">
+  <button id="bro" class="on" onclick="setLang('ro')">RO</button>
+  <button id="ben" onclick="setLang('en')">EN</button>
+</div>
+
+<div class="wrap">
+<header>
+  <div class="dot"></div>
+  <h1>AmiDor</h1>
+  <div class="tag ro">Stă de vorbă cu părintele tău când tu nu poți — și nu inventează niciodată.</div>
+  <div class="tag en">It keeps your parent company when you can't — and never makes things up.</div>
+</header>
+
+<section class="ro">
+  <h2>Ce este</h2>
+  <p><strong>Un companion AI cu voce, pentru vârstnici — construit în jurul unei singure promisiuni: preferă să tacă decât să inventeze.</strong></p>
+  <ul>
+    <li><strong>Motor dual anti-confabulație.</strong> Fiecare întrebare merge la <em>două</em> modele independente. Răspunde doar când sunt de acord; când nu, spune cinstit „nu sunt sigur, hai să verificăm" — nu ghicește. La cifre (doze, sume) e și mai strict: nu aproximează niciodată.</li>
+    <li><strong>Scut anti-escrocherie.</strong> Recunoaște tiparele de înșelăciune — „nepotul la spital", banca falsă care cere coduri, urgența plus secretul — și oprește pe loc, cu voce calmă: „nu da niciun cod, nu trimite bani, sună un om de încredere".</li>
+    <li><strong>Alertă pentru familie, fără să spună ce s-a vorbit.</strong> Când apare un pericol, copilul primește doar atât: „posibilă înșelăciune la ora X". Conversația rămâne privată — familia primește un semnal, nu o transcriere.</li>
+    <li><strong>Vorbește și ascultă,</strong> în română și engleză (mai multe limbi în curând), cu litere mari și ritm calm. Se prezintă mereu ca program, niciodată nu se dă drept om.</li>
+  </ul>
+</section>
+
+<section class="en">
+  <h2>What it is</h2>
+  <p><strong>A voice AI companion for older adults — built around one promise: it would rather stay silent than invent.</strong></p>
+  <ul>
+    <li><strong>Dual-model anti-confabulation engine.</strong> Every question goes to <em>two</em> independent models. It answers only when they agree; when they don't, it honestly says "I'm not sure, let's check" — it doesn't guess. With numbers (doses, amounts) it is stricter still: it never approximates.</li>
+    <li><strong>Scam shield.</strong> It recognises scam patterns — "grandchild in hospital", a fake bank asking for codes, urgency plus secrecy — and stops right there, calmly: "don't give any code, don't send money, call someone you trust".</li>
+    <li><strong>Family alert, without sharing what was said.</strong> When danger appears, the child receives only this: "a possible scam at HH:MM". The conversation stays private — family gets a signal, not a transcript.</li>
+    <li><strong>It speaks and listens,</strong> in Romanian and English (more soon), with large text and a calm pace. It always introduces itself as a program, never pretends to be human.</li>
+  </ul>
+</section>
+
+<section class="warn ro">
+  <h2>Ce NU este — spus înainte să întrebi</h2>
+  <ul>
+    <li><strong>Nu e un produs finit</strong> și nu e destinat folosirii nesupravegheate. E un prototip de arhitectură.</li>
+    <li><strong>Nu e medic.</strong> Nu dă sfaturi medicale, nu confirmă doze — îndrumă spre medic sau farmacist.</li>
+    <li>Scutul anti-escrocherie e o euristică v0 — reduce riscul, nu îl elimină. Mesajul e mereu „verifică cu familia", niciodată „e sigur".</li>
+    <li>„Nu inventează" înseamnă <em>refuză să afirme ce nu poate confirma din două surse</em> — nu o garanție magică de adevăr.</li>
+  </ul>
+</section>
+<section class="warn en">
+  <h2>What it is NOT — said before you ask</h2>
+  <ul>
+    <li><strong>Not a finished product</strong>, not for unsupervised use. An architecture prototype.</li>
+    <li><strong>Not a doctor.</strong> No medical advice, no dose confirmation — it points to a doctor or pharmacist.</li>
+    <li>The scam shield is a v0 heuristic — it reduces risk, doesn't eliminate it. The message is always "check with family", never "it's safe".</li>
+    <li>"Never invents" means <em>it refuses to assert what it cannot confirm from two sources</em> — not a magic guarantee of truth.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="ro">Confidențialitate — prin construcție</span><span class="en">Privacy — by design</span></h2>
+  <p class="ro">Rulează local-first, în UE. Modelele procesează în Uniunea Europeană; vocea locală (pe serverul propriu) nu trimite nimic afară; jurnalul pentru familie e semnat criptografic și se activează <em>doar cu consimțământul persoanei</em>. Fără cont, fără date vândute.</p>
+  <p class="en">Runs local-first, in the EU. Models process within the European Union; local voice (on your own server) sends nothing out; the family journal is cryptographically signed and turns on <em>only with the person's consent</em>. No account, no data sold.</p>
+</section>
+
+<section>
+  <h2><span class="ro">Pentru cine</span><span class="en">Who it's for</span></h2>
+  <p class="ro">Pentru familiile din diasporă, ai căror părinți au rămas acasă. AmiDor le ține companie, îi ferește de escroci, și îți dă ție — copilul de departe — liniștea că cineva veghează, fără să-ți trimită viața lor privată.</p>
+  <p class="en">For diaspora families whose parents stayed home. AmiDor keeps them company, shields them from scams, and gives you — the child far away — the peace of mind that someone is watching, without sending you their private life.</p>
+</section>
+
+<section>
+  <h2><span class="ro">Fundația verificabilă</span><span class="en">The verifiable foundation</span></h2>
+  <div class="grid">
+    <div class="card"><b>⚙️ <span class="ro">Motorul</span><span class="en">The engine</span></b><br>
+      <a href="https://github.com/amidigiart/amidor-engine">amidor-engine</a> · AGPL-3.0 / <span class="ro">comercial</span><span class="en">commercial</span></div>
+    <div class="card"><b>📄 <span class="ro">Ecuațiile</span><span class="en">The equations</span></b><br>
+      <a href="https://doi.org/10.5281/zenodo.21269201">DOI 10.5281/zenodo.21269201</a></div>
+    <div class="card"><b>🧩 <span class="ro">Familia de proiecte</span><span class="en">Project family</span></b><br>
+      <a href="https://github.com/amidigiart/ukbe-core">ukbe-core</a> · <a href="https://kinderagi.com">kinderagi.com</a></div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="ro">Rulează-l singur</span><span class="en">Run it yourself</span></h2>
+  <pre>git clone https://github.com/amidigiart/amidor-engine
+cd amidor-engine && pip install -r requirements.txt
+pip install "ukbe-core @ git+https://github.com/amidigiart/ukbe-core@main"
+# Ollama (ollama.com) + un model, apoi:
+python app.py        # http://localhost:8124</pre>
+  <p class="ro">Server de familie cu HTTPS: <a href="https://github.com/amidigiart/amidor-engine/tree/main/deploy">ghidul de deploy</a> (Docker + Caddy, ~€8/lună, Hetzner UE).</p>
+  <p class="en">Family server with HTTPS: <a href="https://github.com/amidigiart/amidor-engine/tree/main/deploy">the deploy guide</a> (Docker + Caddy, ~€8/month, Hetzner EU).</p>
+</section>
+
+<footer>
+  <span class="ro">AmiDor — parte din amiecosystems · cod: AGPL-3.0 / licență comercială · Mihai Roșca, Brăila · <a href="mailto:contact@kinderagi.com">contact@kinderagi.com</a></span>
+  <span class="en">AmiDor — part of amiecosystems · code: AGPL-3.0 / commercial license · Mihai Roșca, Brăila · <a href="mailto:contact@kinderagi.com">contact@kinderagi.com</a></span>
+</footer>
+</div>
+
+<script>
+function setLang(l){
+  document.body.className = l==='en' ? 'lang-en' : '';
+  document.getElementById('bro').className = l==='ro' ? 'on' : '';
+  document.getElementById('ben').className = l==='en' ? 'on' : '';
+  document.documentElement.lang = l;
+  try{localStorage.setItem('amidorai_lang', l)}catch(e){}
+}
+try{if(localStorage.getItem('amidorai_lang')==='en')setLang('en');}catch(e){}
+</script>
+</body>
+</html>

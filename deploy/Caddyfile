@@ -1,0 +1,13 @@
+# HTTPS automat pentru instanta pilot AmiDor.
+# app.amidorai.com = aplicatia (privata, cu AMIDOR_ACCESS_CODE pentru familii pilot).
+# Landing-ul public amidorai.com se serveste separat (GitHub Pages).
+
+app.amidorai.com {
+	reverse_proxy app:8124
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "no-referrer"
+	}
+}

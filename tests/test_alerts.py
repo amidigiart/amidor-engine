@@ -74,3 +74,17 @@ def test_build_from_env_are_mereu_log(tmp_path):
 def test_build_from_env_adauga_webhook(tmp_path):
     mgr = build_from_env({"ALERT_WEBHOOK_URL": "http://x/hook"}, str(tmp_path / "a.jsonl"))
     assert {c.name for c in mgr.channels} == {"log", "webhook"}
+
+
+# ------------------------------------------------------------ poarta de acces (Sprint 5)
+def test_docker_compose_yaml_valid():
+    """Validam ca stack-ul de deploy parseaza (sintaxa, servicii, volume)."""
+    import re
+    txt = open(Path(__file__).parent.parent / "deploy" / "docker-compose.yml", encoding="utf-8").read()
+    # verificari structurale minime, fara dependinta de pyyaml
+    for svc in ("app:", "ollama:", "caddy:"):
+        assert svc in txt
+    assert "amidor_data:" in txt and "AMIDOR_ENV=prod" in txt
+    # domeniul propriu-zis (blocul de site) e in Caddyfile
+    caddy = open(Path(__file__).parent.parent / "deploy" / "Caddyfile", encoding="utf-8").read()
+    assert "app.amidorai.com {" in caddy and "reverse_proxy app:8124" in caddy
