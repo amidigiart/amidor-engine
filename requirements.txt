@@ -1,0 +1,4 @@
+# Nucleul motorului foloseste doar stdlib + ukbe-core.
+# ukbe-core: pip install "ukbe-core @ git+https://github.com/amidigiart/ukbe-core@main"
+numpy
+# pytest  # doar pentru teste

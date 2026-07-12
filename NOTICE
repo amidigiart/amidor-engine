@@ -1,0 +1,10 @@
+amidor-engine — dual-model anti-confabulation engine
+Copyright (C) 2026 Mihai Roșca / amiecosystems
+
+This program is offered under a DUAL LICENSE:
+  1. GNU Affero General Public License v3.0 (see LICENSE), OR
+  2. A commercial license for use in proprietary/closed products.
+     Contact: contact@kinderagi.com
+
+Built on ukbe-core (Apache-2.0): https://github.com/amidigiart/ukbe-core
+Engine analysis: https://doi.org/10.5281/zenodo.21269201
