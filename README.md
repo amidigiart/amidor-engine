@@ -1,5 +1,8 @@
 # amidor-engine
 
+> **License:** dual **AGPL-3.0 / commercial**. Free to self-host if you open your whole stack; **closed/commercial use requires a commercial license** — see [COMMERCIAL.md](COMMERCIAL.md) · contact@kinderagi.com
+
+
 **A dual-model anti-confabulation engine: two independent models must agree, and the REAI resonance equations decide when the system may assert vs. must ask. When sources disagree, it says so — it does not invent.**
 
 Part of *amiecosystems* · built for [AmiDor](../amidor), a voice-first AI companion for the elderly · engine is domain-agnostic.

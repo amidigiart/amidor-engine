@@ -75,3 +75,7 @@ with per-model reliability weighting and a hard numeric guard — droppable into
 AmiDor (N-model mode) or any product that runs more than one model and needs to
 know when to shut up. That "knowing when to abstain" is the exact market gap the
 whole AmiDor line is built around.
+
+---
+
+**Licensing note:** the *formula* is free (mathematics cannot be owned — that is the point). This **implementation** (`ensemble.py`) is AGPL-3.0 / commercial dual-licensed like the rest of amidor-engine: closed/commercial use requires a license — see [../COMMERCIAL.md](../COMMERCIAL.md).
