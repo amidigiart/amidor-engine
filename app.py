@@ -19,6 +19,7 @@ from pydantic import BaseModel
 
 from adapters import OpenAICompatAdapter
 from engine import DualEngine
+from ensemble_engine import EnsembleEngine
 from i18n import bundle, t, available, DEFAULT as DEFAULT_LANG
 from scam_shield import detect_scam, scam_response
 from voice_local import tts_available, synthesize
@@ -49,6 +50,20 @@ B = OpenAICompatAdapter(
     os.getenv("MODEL_B_NAME", "gemma3:4b"),
     api_key=os.getenv("MODEL_B_KEY"), temperature=0.8, name="B", max_tokens=260)
 
+# Modele suplimentare optionale (C, D...) pentru mod N-model. Fiecare cu pondere
+# de incredere proprie (MODEL_x_WEIGHT). Cate sunt configurate, atatea intra in ansamblu.
+def _extra_model(letter, temp):
+    url = os.getenv(f"MODEL_{letter}_URL")
+    if not url:
+        return None
+    return OpenAICompatAdapter(url, os.getenv(f"MODEL_{letter}_NAME", "gemma3:4b"),
+        api_key=os.getenv(f"MODEL_{letter}_KEY"), temperature=temp,
+        name=letter, max_tokens=260)
+
+MODELS = [A, B] + [m for m in (_extra_model("C", 0.5), _extra_model("D", 1.0)) if m]
+WEIGHTS = [float(os.getenv(f"MODEL_{c}_WEIGHT", "1.0")) for c in
+           ["A", "B", "C", "D"][:len(MODELS)]]
+
 if ENV == "prod" and FAMILY_PIN == "1234":
     raise RuntimeError("Refuz pornirea in productie cu PIN implicit. Seteaza AMIDOR_FAMILY_PIN.")
 
@@ -57,8 +72,13 @@ _ENGINES: dict[str, DualEngine] = {}
 def engine_for(lang: str) -> DualEngine:
     lang = lang if lang in {l['code'] for l in available()} else DEFAULT_LANG
     if lang not in _ENGINES:
-        _ENGINES[lang] = DualEngine(A, B, system_prompt=bundle(lang)['system_prompt'],
-                                    threshold=CONC_THRESHOLD, locale=lang)
+        sp = bundle(lang)['system_prompt']
+        if len(MODELS) >= 3:
+            _ENGINES[lang] = EnsembleEngine(MODELS, system_prompt=sp,
+                weights=WEIGHTS, threshold=CONC_THRESHOLD, locale=lang)
+        else:
+            _ENGINES[lang] = DualEngine(A, B, system_prompt=sp,
+                threshold=CONC_THRESHOLD, locale=lang)
     return _ENGINES[lang]
 
 _RATE: dict[str, list] = {}
@@ -98,7 +118,7 @@ def _log(entry: dict):
         f.write(json.dumps({"entry": entry, "record": rec.to_dict()}, ensure_ascii=False) + "\n")
 
 
-app = FastAPI(title="AmiDor", version="0.5.0")
+app = FastAPI(title="AmiDor", version="0.6.0")
 
 
 class Msg(BaseModel):
@@ -117,8 +137,9 @@ def family_ui():
 
 @app.get("/api/health")
 def health():
-    return {"service": "amidor", "version": "0.5.0",
-            "engine": "dual anti-confabulation + REAI gate",
+    return {"service": "amidor", "version": "0.6.0",
+            "engine": ("ensemble (WEAC) " if len(MODELS) >= 3 else "dual ") +
+                      f"anti-confabulation + REAI gate · {len(MODELS)} models",
             "scam_shield": "v0", "journal_consent": CONSENT,
             "notary_pubkey": PUB.hex()}
 
