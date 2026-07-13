@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>REAI Engine — Live State Monitor</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>▲</text></svg>">
+<style>
+  /* Local-first: zero CDN, CSS + SVG inline. Estetica CRT verde. */
+  :root{--bg:#000;--ink:#00ff41;--dim:#00b32d;--line:#004d00;--warn:#ff2b5e}
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--bg);color:var(--ink);font-family:ui-monospace,Consolas,monospace;
+       min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;
+       overflow-x:hidden}
+  .scan{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+  .scan i{position:absolute;left:0;width:100%;height:2px;
+          background:linear-gradient(90deg,transparent,var(--ink),transparent);
+          animation:scan 8s linear infinite}
+  @keyframes scan{0%{top:0}100%{top:100%}}
+  .card{width:min(880px,96vw);border:1px solid var(--line);background:rgba(0,0,0,.9);
+        border-radius:12px;padding:22px;position:relative}
+  header{text-align:center;margin-bottom:20px}
+  h1{font-size:1.5rem;letter-spacing:.2em;text-transform:uppercase}
+  h1 .live{color:var(--ink);animation:blink 1.4s step-start infinite}
+  @keyframes blink{50%{opacity:.25}}
+  .sub{font-size:.8rem;color:var(--dim);margin-top:6px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
+  .kpi{border:1px solid var(--line);border-radius:10px;padding:16px;text-align:center;
+       transition:background .2s}
+  .kpi:hover{background:#001a00}
+  .kpi .lbl{font-size:.7rem;text-transform:uppercase;color:var(--dim);letter-spacing:.1em}
+  .kpi .val{font-size:1.6rem;font-weight:700;margin-top:6px}
+  .bar{height:6px;background:#012;border-radius:3px;margin-top:10px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--ink);width:0;transition:width .3s}
+  .ico{width:22px;height:22px;margin:0 auto 6px;display:block;fill:none;stroke:var(--ink);stroke-width:2}
+  footer{margin-top:20px;text-align:center;font-size:.72rem;color:var(--dim)}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ink);
+       animation:blink 1.4s step-start infinite;vertical-align:middle;margin-right:6px}
+  .off{background:var(--warn)}
+</style>
+</head>
+<body>
+<div class="scan"><i></i></div>
+<div class="card">
+  <header>
+    <h1>REAI Engine <span class="live">● LIVE</span></h1>
+    <div class="sub">stare reală a motorului (Kuramoto + Kalman + α/β adaptiv) · ukbe_core.UKBEEngine</div>
+  </header>
+
+  <div class="grid">
+    <div class="kpi">
+      <svg class="ico" viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6"/></svg>
+      <div class="lbl">RSI</div><div class="val" id="rsi">—</div>
+      <div class="bar"><i id="rsi-bar"></i></div>
+    </div>
+    <div class="kpi">
+      <svg class="ico" viewBox="0 0 24 24"><path d="M12 3v18M5 8l7-5 7 5"/></svg>
+      <div class="lbl">α (uman)</div><div class="val" id="alpha">—</div>
+      <div class="bar"><i id="alpha-bar"></i></div>
+    </div>
+    <div class="kpi">
+      <svg class="ico" viewBox="0 0 24 24"><path d="M12 3a4 4 0 0 1 4 4v3a4 4 0 1 1-8 0V7a4 4 0 0 1 4-4z"/></svg>
+      <div class="lbl">H (entropie)</div><div class="val" id="h">—</div>
+      <div class="bar"><i id="h-bar"></i></div>
+    </div>
+    <div class="kpi">
+      <svg class="ico" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      <div class="lbl">Locked %</div><div class="val" id="locked">—</div>
+      <div class="bar"><i id="locked-bar"></i></div>
+    </div>
+    <div class="kpi">
+      <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      <div class="lbl">β_min (Adler)</div><div class="val" id="betamin">—</div>
+    </div>
+    <div class="kpi">
+      <svg class="ico" viewBox="0 0 24 24"><path d="M4 12h4l3 8 4-16 3 8h2"/></svg>
+      <div class="lbl">Φ_extern</div><div class="val" id="phiext">—</div>
+      <div class="bar"><i id="phiext-bar"></i></div>
+    </div>
+    <div class="kpi">
+      <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>
+      <div class="lbl">t (timp motor)</div><div class="val" id="t">—</div>
+    </div>
+    <div class="kpi">
+      <svg class="ico" viewBox="0 0 24 24"><path d="M12 2l3 7h7l-6 4 2 7-6-4-6 4 2-7-6-4h7z"/></svg>
+      <div class="lbl">Evenimente</div><div class="val" id="events">—</div>
+    </div>
+  </div>
+
+  <footer>
+    <div><span class="dot" id="dot"></span><span id="status">se conectează…</span></div>
+    <div style="margin-top:6px">REAI Engine Monitor · © 2026 Mihai Roșca / amiecosystems ·
+      AGPL-3.0 / comercial · demo prin NDA</div>
+  </footer>
+</div>
+
+<script>
+const CODE = new URLSearchParams(location.search).get('code') || '';
+function set(id,v){document.getElementById(id).textContent=v;}
+function bar(id,pct){document.getElementById(id).style.width=Math.max(0,Math.min(100,pct))+'%';}
+async function tick(){
+  try{
+    const r=await fetch('/monitor/state'+(CODE?('?code='+encodeURIComponent(CODE)):''));
+    if(!r.ok)throw new Error(r.status);
+    const d=await r.json();
+    set('rsi',d.RSI); bar('rsi-bar',d.RSI*100);
+    set('alpha',d.alpha); bar('alpha-bar',d.alpha*100);
+    set('h',d.H); bar('h-bar',d.H*100);
+    set('locked',d.locked_pct+'%'); bar('locked-bar',d.locked_pct);
+    set('betamin',d.beta_min);
+    set('phiext',d.phi_extern); bar('phiext-bar',d.phi_extern*100);
+    set('t',d.t); set('events',d.n_events);
+    document.getElementById('dot').className='dot';
+    document.getElementById('status').textContent='LIVE'+(d.gated?' · NDA-gated':'');
+  }catch(e){
+    document.getElementById('dot').className='dot off';
+    document.getElementById('status').textContent=(e.message==='403')?'acces prin NDA (adăugați ?code=…)':'offline';
+  }
+}
+tick(); setInterval(tick,500);
+</script>
+</body>
+</html>
