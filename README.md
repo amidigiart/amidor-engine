@@ -70,3 +70,13 @@ This is the open-core model (MongoDB/Grafana style): the code is public for trus
 ## N-model generalization (WEAC)
 
 The dual (2-model) check generalizes to N models with reliability weights via the **[Weighted Ensemble Agreement Coherence](docs/ENSEMBLE-COHERENCE.md)** formula (`ensemble.py`): one calibratable coherence score in [0,1] that reduces exactly to the 2-model case, delivers the weighted-medoid answer, and abstains on low coherence or a hard numeric conflict. Built on the corrected coherence from the [REAI §11 corrigendum](https://github.com/amidigiart/ukbe-core/blob/main/docs/SECTION-11-CORRIGENDUM.md).
+
+## Methodology & IP (in the vault)
+
+These are the crown-jewel documents — **public for credibility, AGPL/commercial for reuse**:
+- [REAI methodology note](docs/REAI-METHODOLOGY.md) — sober definition, anchored to the reproduced result, non-overclaiming.
+- [Section 11 corrigendum](docs/SECTION-11-CORRIGENDUM.md) — verified self-correction, with [runnable proof](docs/verify_section11.py).
+- [WEAC — ensemble coherence](docs/ENSEMBLE-COHERENCE.md) — the N-model formula.
+- [COMMERCIAL.md](COMMERCIAL.md) — licensing terms.
+
+The open door (free): the reproduced paper at [doi:10.5281/zenodo.21269201](https://doi.org/10.5281/zenodo.21269201).
