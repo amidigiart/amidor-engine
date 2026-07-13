@@ -63,3 +63,7 @@ pytest tests/          # 12 passed, fully offline (deterministic adapters)
 This is the open-core model (MongoDB/Grafana style): the code is public for trust and scrutiny; commercial use in proprietary products is licensed. The upstream [ukbe-core](https://github.com/amidigiart/ukbe-core) stays Apache-2.0.
 
 © 2026 Mihai Roșca · amiecosystems
+
+## N-model generalization (WEAC)
+
+The dual (2-model) check generalizes to N models with reliability weights via the **[Weighted Ensemble Agreement Coherence](docs/ENSEMBLE-COHERENCE.md)** formula (`ensemble.py`): one calibratable coherence score in [0,1] that reduces exactly to the 2-model case, delivers the weighted-medoid answer, and abstains on low coherence or a hard numeric conflict. Built on the corrected coherence from the [REAI §11 corrigendum](https://github.com/amidigiart/ukbe-core/blob/main/docs/SECTION-11-CORRIGENDUM.md).
