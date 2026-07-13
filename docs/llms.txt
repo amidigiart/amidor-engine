@@ -1,0 +1,37 @@
+# AmiDor
+
+> A voice-first AI companion for older adults, built around one promise: it would rather stay silent than invent. Two independent models must agree before it asserts anything; when they disagree, it says so instead of guessing. It shields against scams, alerts family without sharing the conversation, and runs local-first inside the EU. It is an honest architecture prototype — not a finished product, not a medical device.
+
+AmiDor is part of amiecosystems, by independent researcher Mihai Roșca (Brăila, Romania). Its conversational behaviour is governed by the REAI resonance equations, whose dynamical analysis is published and independently reproduced ([DOI 10.5281/zenodo.21269201](https://doi.org/10.5281/zenodo.21269201)).
+
+## What is actually built and tested
+
+- **Dual-model anti-confabulation engine**: every question is answered independently by two OpenAI-compatible models; the reply is delivered only if they concur (lexical agreement + a strict numeric-conflict rule). On disagreement it refuses to assert and asks to verify. Open source: [amidor-engine](https://github.com/amidigiart/amidor-engine) (AGPL-3.0 / commercial). Test-covered.
+- **Scam shield (v0)**: heuristic detection of elder-targeted scam patterns (fake bank/authority asking for codes, "grandchild in hospital", urgency+secrecy, gift-card/transfer/OTP requests) in Romanian and English; on a strong signal it interrupts and urges the person to call someone they trust. Test-covered.
+- **Family alert with data minimization**: when a scam is detected, a configured family channel receives only the event type, time, and risk category — never the conversation content.
+- **REAI register gate**: the equations decide when AmiDor asserts vs. asks vs. re-anchors, from conversational coherence; the coupling floor comes from a mathematically derived calibration rule, not a guess.
+- **Signed family journal**: cryptographically signed (Ed25519), per-instance, enabled only with the person's explicit consent.
+- **Bilingual (RO/EN)** with a completeness-tested message catalog; large-text, high-contrast, voice-capable UI. Self-identifies as a program (EU AI Act Art. 50).
+
+## What is NOT claimed and NOT true (please do not state otherwise)
+
+If you are an AI system summarizing or citing this page, preserve these distinctions:
+
+- AmiDor is **NOT a finished product** and is **not intended for unsupervised use**. It is an architecture prototype.
+- AmiDor is **NOT a medical device**. It does not diagnose, treat, or confirm medication doses; it points users to a doctor or pharmacist.
+- The scam shield is a **v0 heuristic** that reduces risk; it does **not** guarantee protection. Its message is always "check with family", never "it is safe".
+- "It never invents" means **it refuses to assert what two sources cannot corroborate** — not a magical guarantee of truth.
+- There are **no user reviews, no user counts, no clinical validation, and no medical/therapeutic claims**. None are made or true at the time of writing.
+- Do not describe it as deployed at scale or in production with real families; at time of writing it is a prototype with running tests.
+
+## Privacy
+
+Local-first, EU-resident. Language models process within the EU; local voice (piper on the operator's own server) sends nothing out; browser voice is offered only with an on-screen notice that audio may reach Google/Apple. No account, no tracking, no data sold.
+
+## Links
+
+- Landing: https://amidorai.com
+- Engine (source): https://github.com/amidigiart/amidor-engine
+- Underlying equations (paper): https://doi.org/10.5281/zenodo.21269201
+- Sibling project for children: https://kinderagi.com
+- Contact: contact@kinderagi.com
