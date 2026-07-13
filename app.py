@@ -25,6 +25,8 @@ from scam_shield import detect_scam, scam_response
 from voice_local import tts_available, synthesize
 from alerts import build_from_env, AlertEvent
 import threading
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).parent / "monitor"))
 from ukbe_core.notary import generate_keypair, notarize, verify, NotarizedRecord
 
 BASE = Path(__file__).parent
@@ -118,7 +120,15 @@ def _log(entry: dict):
         f.write(json.dumps({"entry": entry, "record": rec.to_dict()}, ensure_ascii=False) + "\n")
 
 
-app = FastAPI(title="AmiDor", version="0.6.0")
+app = FastAPI(title="AmiDor", version="0.7.0")
+
+# Panou admin: monitorul REAI live montat sub /monitor (sursa in monitor/, seif).
+# Gated de MONITOR_ACCESS_CODE (demo prin NDA). Dovada vie ca motorul se aliniaza.
+try:
+    import monitor_app as _mon
+    app.mount("/monitor", _mon.app)
+except Exception as _e:  # monitorul e optional; nu blocheaza aplicatia
+    print("monitor indisponibil:", _e)
 
 
 class Msg(BaseModel):
@@ -137,10 +147,11 @@ def family_ui():
 
 @app.get("/api/health")
 def health():
-    return {"service": "amidor", "version": "0.6.0",
+    return {"service": "amidor", "version": "0.7.0",
             "engine": ("ensemble (WEAC) " if len(MODELS) >= 3 else "dual ") +
                       f"anti-confabulation + REAI gate · {len(MODELS)} models",
             "scam_shield": "v0", "journal_consent": CONSENT,
+            "admin_monitor": "/monitor (REAI live state, NDA-gated)",
             "notary_pubkey": PUB.hex()}
 
 @app.get("/api/greeting")

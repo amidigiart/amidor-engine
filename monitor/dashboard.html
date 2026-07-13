@@ -100,7 +100,7 @@ function set(id,v){document.getElementById(id).textContent=v;}
 function bar(id,pct){document.getElementById(id).style.width=Math.max(0,Math.min(100,pct))+'%';}
 async function tick(){
   try{
-    const r=await fetch('/monitor/state'+(CODE?('?code='+encodeURIComponent(CODE)):''));
+    const r=await fetch('state'+(CODE?('?code='+encodeURIComponent(CODE)):''));
     if(!r.ok)throw new Error(r.status);
     const d=await r.json();
     set('rsi',d.RSI); bar('rsi-bar',d.RSI*100);

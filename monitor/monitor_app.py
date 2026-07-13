@@ -63,12 +63,19 @@ def _driver():
         time.sleep(_cfg.dt)
 
 
+_driver_started = False
+
+def start_driver():
+    """Porneste driverul de motor o singura data. Apelat la import (ca sa mearga
+    si cand monitorul e MONTAT intr-o alta aplicatie, nu doar standalone)."""
+    global _driver_started
+    if not _driver_started:
+        _driver_started = True
+        threading.Thread(target=_driver, daemon=True).start()
+
+
 app = FastAPI(title="REAI Engine Monitor", version="0.1.0")
-
-
-@app.on_event("startup")
-def _start():
-    threading.Thread(target=_driver, daemon=True).start()
+start_driver()
 
 
 @app.get("/")
@@ -76,7 +83,7 @@ def ui():
     return FileResponse(BASE / "dashboard.html")
 
 
-@app.get("/monitor/state")
+@app.get("/state")
 def state(code: str = ""):
     if ACCESS and code != ACCESS:
         raise HTTPException(403, "acces demo prin NDA (setați ?code=…)")
@@ -85,7 +92,7 @@ def state(code: str = ""):
                             "threshold_beta_min": _cal["threshold_beta_min"]}}
 
 
-@app.get("/monitor/health")
+@app.get("/health")
 def health():
     return {"service": "reai-engine-monitor", "gated": bool(ACCESS),
             "engine": "ukbe_core.UKBEEngine (real state)"}

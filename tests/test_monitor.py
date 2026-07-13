@@ -26,7 +26,7 @@ def test_starea_e_reala_si_in_interval():
     mod, c = _client()
     with c:                      # ruleaza startup (porneste driverul)
         time.sleep(0.3)          # lasa cateva pasi de motor
-        d = c.get("/monitor/state").json()
+        d = c.get("/state").json()
     for key in ("RSI", "alpha", "beta", "H", "phi_intern", "phi_extern"):
         assert 0.0 - 1e-9 <= d[key] <= 1.0 + 1e-9, f"{key}={d[key]} in afara [0,1]"
     assert 0.0 <= d["locked_pct"] <= 100.0
@@ -37,9 +37,9 @@ def test_starea_e_reala_si_in_interval():
 def test_poarta_nda_blocheaza_fara_cod():
     mod, c = _client(MONITOR_ACCESS_CODE="nda-secret")
     with c:
-        assert c.get("/monitor/state").status_code == 403
-        assert c.get("/monitor/state?code=nda-secret").status_code == 200
-        assert c.get("/monitor/health").status_code == 200   # health ramane public
+        assert c.get("/state").status_code == 403
+        assert c.get("/state?code=nda-secret").status_code == 200
+        assert c.get("/health").status_code == 200   # health ramane public
 
 
 def teardown_module(module):
