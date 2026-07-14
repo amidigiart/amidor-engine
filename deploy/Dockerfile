@@ -11,6 +11,7 @@ RUN pip install --no-cache-dir fastapi uvicorn pydantic numpy cryptography \
 
 COPY *.py ./
 COPY static/ static/
+COPY monitor/ monitor/
 
 ENV AMIDOR_ENV=prod
 EXPOSE 8124

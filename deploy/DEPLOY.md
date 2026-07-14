@@ -33,15 +33,25 @@ cu `AMIDOR_ACCESS_CODE` — doar familiile care au primit codul intră.
 
 ### Pași (Hetzner CX32, ~€8/lună, Ubuntu 24.04, locație UE)
 
+**Calea scurtă — bootstrap dintr-o comandă (idempotent):**
+
+```bash
+# pe VPS, ca root:
+curl -fsSL https://raw.githubusercontent.com/amidigiart/amidor-engine/main/deploy/bootstrap.sh | bash
+# prima rulare creează .env și se oprește; completezi .env, rulezi din nou.
+```
+
+**Sau manual:**
+
 ```bash
 # 1. pe VPS
 curl -fsSL https://get.docker.com | sh
 
 # 2. codul
 git clone https://github.com/amidigiart/amidor-engine && cd amidor-engine/deploy
-cp .env.example .env && nano .env      # PIN real, cod acces, cheie Mistral, alerte
+cp .env.example .env && nano .env      # PIN real, cod acces, cheie Mistral, cod monitor
 
-# 3. DNS: A record  app.amidorai.com -> IP-ul VPS-ului (in Cloudflare)
+# 3. DNS: A record  app.amidorai.com -> IP-ul VPS-ului (in Cloudflare, norisor GRI)
 
 # 4. porneste (app + ollama local + caddy cu HTTPS automat)
 docker compose up -d --build
@@ -51,6 +61,7 @@ docker compose exec ollama ollama pull mistral
 
 # 6. verifica
 curl https://app.amidorai.com/api/health
+# panoul admin (NDA): https://app.amidorai.com/monitor/?code=<MONITOR_ACCESS_CODE>
 ```
 
 ### Resurse și scalare
@@ -66,6 +77,7 @@ docker run --rm -v deploy_amidor_data:/d -v $PWD:/b alpine \
 
 ### Checklist pilot cu familii reale
 - [ ] `.env`: PIN schimbat, `AMIDOR_ACCESS_CODE` setat, cheie Model A, alerte configurate
+- [ ] `MONITOR_ACCESS_CODE` setat (panoul /monitor NU rămâne deschis în prod)
 - [ ] `AMIDOR_JOURNAL_CONSENT=true` DOAR după acordul explicit al persoanei
 - [ ] locație Hetzner UE confirmată
 - [ ] voce locală (piper) montată dacă se promite confidențialitate deplină
