@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import math
 import os
+import sys
 import threading
 import time
 from pathlib import Path
@@ -22,17 +23,23 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 
-from ukbe_core.engine import UKBEConfig, UKBEEngine
+from ukbe_core.engine import UKBEConfig
 from ukbe_core.calibration import recommend_beta_min
 
 BASE = Path(__file__).parent
+sys.path.insert(0, str(BASE.parent))            # scale_engine e in radacina seifului
+from scale_engine import ScaleEngine
+
 ACCESS = os.getenv("MONITOR_ACCESS_CODE", "")   # gol = deschis local; setat = NDA-gated
 TWO_PI = 2 * math.pi
 
+# scara demo-ului: motorul de PRODUCTIE (O(N) mean-field), nu jucaria de 30
+MONITOR_N = int(os.getenv("MONITOR_N", "10000"))
+
 _cal = recommend_beta_min(delta_omega_max=0.19, K_ext=1.5, safety_margin=1.5)
-_cfg = UKBEConfig(N=30, K_ext=1.5, K_int=1.2,
+_cfg = UKBEConfig(N=MONITOR_N, K_ext=1.5, K_int=1.2,
                   beta_min=_cal["recommended_beta_min"], seed=7)
-_engine = UKBEEngine(_cfg)
+_engine = ScaleEngine(_cfg)
 _state: dict = {"t": 0.0}
 _running = True
 
@@ -45,9 +52,13 @@ def _driver():
     while _running:
         omega_h = 1.0 + 0.25 * math.sin(k * 0.01)   # intentie care respira
         ref += omega_h * _cfg.dt
+        t0 = time.perf_counter()
         out = _engine.step(ref)                      # pas real de motor
+        step_ms = (time.perf_counter() - t0) * 1000
         snap = _engine.get_state_snapshot()
         _state.update({
+            "N": _cfg.N,
+            "step_ms": round(step_ms, 2),
             "t": round(out["t"], 2),
             "alpha": round(out["alpha"], 4),
             "beta": round(out["beta"], 4),
@@ -95,7 +106,7 @@ def state(code: str = ""):
 @app.get("/health")
 def health():
     return {"service": "reai-engine-monitor", "gated": bool(ACCESS),
-            "engine": "ukbe_core.UKBEEngine (real state)"}
+            "engine": f"scale_engine.ScaleEngine O(N) mean-field, N={_cfg.N} (real state)"}
 
 
 if __name__ == "__main__":

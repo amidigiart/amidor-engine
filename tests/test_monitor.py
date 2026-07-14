@@ -34,6 +34,17 @@ def test_starea_e_reala_si_in_interval():
     assert d["beta"] >= d["beta_min"] - 1e-9             # planseul Adler respectat
 
 
+def test_motorul_de_scara_e_cel_care_ruleaza():
+    mod, c = _client()
+    with c:
+        time.sleep(0.3)
+        d = c.get("/state").json()
+        h = c.get("/health").json()
+    assert d["N"] >= 1000                      # scara de productie, nu jucaria N=30
+    assert d["step_ms"] >= 0.0                 # costul real pe pas, masurat
+    assert "ScaleEngine" in h["engine"]        # motorul O(N) din seif
+
+
 def test_poarta_nda_blocheaza_fara_cod():
     mod, c = _client(MONITOR_ACCESS_CODE="nda-secret")
     with c:

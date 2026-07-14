@@ -44,7 +44,8 @@
 <div class="card">
   <header>
     <h1>REAI Engine <span class="live">● LIVE</span></h1>
-    <div class="sub">stare reală a motorului (Kuramoto + Kalman + α/β adaptiv) · ukbe_core.UKBEEngine</div>
+    <div class="sub">stare reală a motorului (Kuramoto + Kalman + α/β adaptiv) ·
+      ScaleEngine O(N) · <span id="nosc">—</span> oscilatori · <span id="stepms">—</span> ms/pas</div>
   </header>
 
   <div class="grid">
@@ -110,6 +111,8 @@ async function tick(){
     set('betamin',d.beta_min);
     set('phiext',d.phi_extern); bar('phiext-bar',d.phi_extern*100);
     set('t',d.t); set('events',d.n_events);
+    if(d.N)set('nosc',d.N.toLocaleString('ro-RO'));
+    if(d.step_ms!=null)set('stepms',d.step_ms);
     document.getElementById('dot').className='dot';
     document.getElementById('status').textContent='LIVE'+(d.gated?' · NDA-gated':'');
   }catch(e){
