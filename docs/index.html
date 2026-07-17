@@ -19,7 +19,7 @@
       "url": "https://amidorai.com",
       "codeRepository": "https://github.com/amidigiart/amidor-engine",
       "license": "https://www.gnu.org/licenses/agpl-3.0.html",
-      "inLanguage": ["ro", "en"],
+      "inLanguage": ["ro", "en", "de", "es", "it", "fr"],
       "author": { "@id": "https://amidorai.com/#person" },
       "isBasedOn": { "@id": "https://amidorai.com/#engine" }
     },
@@ -60,9 +60,10 @@
   *{box-sizing:border-box;margin:0}
   body{font-family:Georgia,'Times New Roman',serif;background:var(--bg);color:var(--ink);
        line-height:1.65}
-  .lang{position:fixed;top:14px;right:16px;z-index:9}
+  .lang{position:fixed;top:14px;right:16px;z-index:9;display:flex;gap:4px;flex-wrap:wrap;
+        justify-content:flex-end;max-width:70vw}
   .lang button{background:var(--panel);color:var(--soft);border:1px solid var(--line);
-    padding:6px 12px;border-radius:8px;cursor:pointer;font-family:inherit}
+    padding:6px 10px;border-radius:8px;cursor:pointer;font-family:inherit}
   .lang button.on{color:#fff;background:var(--accent);font-weight:700}
   .wrap{max-width:840px;margin:auto;padding:24px 20px 60px}
   header{text-align:center;padding:44px 0 12px}
@@ -80,14 +81,20 @@
   a{color:var(--accent)} .warn{border-color:var(--warm)}
   footer{text-align:center;color:var(--soft);font-size:.85rem;padding-top:26px}
   footer a{color:var(--soft)}
-  .en{display:none} body.lang-en .en{display:block} body.lang-en .ro{display:none}
-  span.en{display:none} body.lang-en span.en{display:inline} body.lang-en span.ro{display:none}
+  .en,.de,.es,.it,.fr{display:none}
+  body.lang-en .en,body.lang-de .de,body.lang-es .es,body.lang-it .it,body.lang-fr .fr{display:block}
+  body.lang-en span.en,body.lang-de span.de,body.lang-es span.es,body.lang-it span.it,body.lang-fr span.fr{display:inline}
+  body.lang-en .ro,body.lang-de .ro,body.lang-es .ro,body.lang-it .ro,body.lang-fr .ro{display:none}
 </style>
 </head>
 <body>
 <div class="lang">
   <button id="bro" class="on" onclick="setLang('ro')">RO</button>
   <button id="ben" onclick="setLang('en')">EN</button>
+  <button id="bde" onclick="setLang('de')">DE</button>
+  <button id="bes" onclick="setLang('es')">ES</button>
+  <button id="bit" onclick="setLang('it')">IT</button>
+  <button id="bfr" onclick="setLang('fr')">FR</button>
 </div>
 
 <div class="wrap">
@@ -96,6 +103,10 @@
   <h1>AmiDor</h1>
   <div class="tag ro">Stă de vorbă cu părintele tău când tu nu poți — și nu inventează niciodată.</div>
   <div class="tag en">It keeps your parent company when you can't — and never makes things up.</div>
+  <div class="tag de">Es leistet deinen Eltern Gesellschaft, wenn du nicht kannst — und erfindet nie etwas.</div>
+  <div class="tag es">Acompaña a tus padres cuando tú no puedes — y nunca inventa nada.</div>
+  <div class="tag it">Fa compagnia ai tuoi genitori quando tu non puoi — e non inventa mai nulla.</div>
+  <div class="tag fr">Il tient compagnie à tes parents quand tu ne peux pas — et n'invente jamais rien.</div>
 </header>
 
 <section class="ro">
@@ -120,6 +131,50 @@
   </ul>
 </section>
 
+<section class="de">
+  <h2>Was es ist</h2>
+  <p><strong>Ein Sprach-KI-Begleiter für ältere Menschen — gebaut um ein einziges Versprechen: lieber schweigen als erfinden.</strong></p>
+  <ul>
+    <li><strong>Duale Anti-Konfabulations-Engine.</strong> Jede Frage geht an <em>zwei</em> unabhängige Modelle. Es antwortet nur, wenn sie übereinstimmen; wenn nicht, sagt es ehrlich „Ich bin nicht sicher, sehen wir nach" — es rät nicht. Bei Zahlen (Dosen, Beträgen) ist es noch strenger: Es nähert niemals an.</li>
+    <li><strong>Betrugsschutz.</strong> Er erkennt Betrugsmuster — „Enkel im Krankenhaus", eine falsche Bank, die Codes verlangt, Dringlichkeit plus Geheimhaltung — und stoppt sofort, ruhig: „Gib keinen Code heraus, überweise kein Geld, ruf einen vertrauten Menschen an."</li>
+    <li><strong>Familienalarm, ohne den Inhalt zu teilen.</strong> Bei Gefahr erhält das Kind nur dies: „möglicher Betrug um HH:MM". Das Gespräch bleibt privat — die Familie bekommt ein Signal, kein Protokoll.</li>
+    <li><strong>Es spricht und hört zu,</strong> auf Rumänisch und Englisch (weitere Sprachen folgen), mit großer Schrift und ruhigem Tempo. Es stellt sich immer als Programm vor, gibt sich nie als Mensch aus.</li>
+  </ul>
+</section>
+
+<section class="es">
+  <h2>Qué es</h2>
+  <p><strong>Un compañero de IA por voz para personas mayores — construido en torno a una sola promesa: prefiere callar antes que inventar.</strong></p>
+  <ul>
+    <li><strong>Motor dual anti-confabulación.</strong> Cada pregunta va a <em>dos</em> modelos independientes. Solo responde cuando coinciden; si no, dice honestamente «no estoy seguro, vamos a comprobarlo» — no adivina. Con números (dosis, importes) es aún más estricto: nunca aproxima.</li>
+    <li><strong>Escudo antiestafas.</strong> Reconoce los patrones de estafa — «el nieto en el hospital», un banco falso que pide códigos, urgencia más secreto — y se detiene ahí mismo, con calma: «no des ningún código, no envíes dinero, llama a alguien de confianza».</li>
+    <li><strong>Alerta familiar, sin compartir lo hablado.</strong> Ante un peligro, el hijo recibe solo esto: «posible estafa a las HH:MM». La conversación queda privada — la familia recibe una señal, no una transcripción.</li>
+    <li><strong>Habla y escucha,</strong> en rumano e inglés (más idiomas pronto), con letra grande y ritmo tranquilo. Siempre se presenta como programa, nunca finge ser humano.</li>
+  </ul>
+</section>
+
+<section class="it">
+  <h2>Che cos'è</h2>
+  <p><strong>Un compagno IA vocale per anziani — costruito attorno a un'unica promessa: preferisce tacere piuttosto che inventare.</strong></p>
+  <ul>
+    <li><strong>Motore duale anti-confabulazione.</strong> Ogni domanda va a <em>due</em> modelli indipendenti. Risponde solo quando concordano; quando no, dice onestamente «non sono sicuro, verifichiamo» — non tira a indovinare. Con i numeri (dosi, importi) è ancora più severo: non approssima mai.</li>
+    <li><strong>Scudo antitruffa.</strong> Riconosce gli schemi di truffa — «il nipote in ospedale», una banca falsa che chiede codici, urgenza più segretezza — e si ferma lì, con calma: «non dare nessun codice, non inviare denaro, chiama una persona di fiducia».</li>
+    <li><strong>Allarme famiglia, senza condividere il contenuto.</strong> Davanti a un pericolo, il figlio riceve solo questo: «possibile truffa alle HH:MM». La conversazione resta privata — la famiglia riceve un segnale, non una trascrizione.</li>
+    <li><strong>Parla e ascolta,</strong> in rumeno e inglese (altre lingue in arrivo), con caratteri grandi e ritmo calmo. Si presenta sempre come programma, non finge mai di essere umano.</li>
+  </ul>
+</section>
+
+<section class="fr">
+  <h2>Ce que c'est</h2>
+  <p><strong>Un compagnon IA vocal pour les personnes âgées — construit autour d'une seule promesse : il préfère se taire plutôt qu'inventer.</strong></p>
+  <ul>
+    <li><strong>Moteur dual anti-confabulation.</strong> Chaque question va à <em>deux</em> modèles indépendants. Il ne répond que lorsqu'ils concordent ; sinon, il dit honnêtement « je ne suis pas sûr, vérifions » — il ne devine pas. Avec les chiffres (doses, montants), il est encore plus strict : il n'approxime jamais.</li>
+    <li><strong>Bouclier anti-arnaque.</strong> Il reconnaît les schémas d'arnaque — « le petit-fils à l'hôpital », une fausse banque qui demande des codes, l'urgence plus le secret — et s'arrête net, calmement : « ne donne aucun code, n'envoie pas d'argent, appelle une personne de confiance ».</li>
+    <li><strong>Alerte famille, sans partager la conversation.</strong> En cas de danger, l'enfant reçoit seulement ceci : « arnaque possible à HH:MM ». La conversation reste privée — la famille reçoit un signal, pas une transcription.</li>
+    <li><strong>Il parle et écoute,</strong> en roumain et en anglais (d'autres langues bientôt), en gros caractères et à un rythme calme. Il se présente toujours comme un programme, ne se fait jamais passer pour un humain.</li>
+  </ul>
+</section>
+
 <section class="warn ro">
   <h2>Ce NU este — spus înainte să întrebi</h2>
   <ul>
@@ -138,57 +193,113 @@
     <li>"Never invents" means <em>it refuses to assert what it cannot confirm from two sources</em> — not a magic guarantee of truth.</li>
   </ul>
 </section>
+<section class="warn de">
+  <h2>Was es NICHT ist — gesagt, bevor du fragst</h2>
+  <ul>
+    <li><strong>Kein fertiges Produkt</strong>, nicht für unbeaufsichtigte Nutzung. Ein Architektur-Prototyp.</li>
+    <li><strong>Kein Arzt.</strong> Keine medizinischen Ratschläge, keine Dosisbestätigung — es verweist an Arzt oder Apotheke.</li>
+    <li>Der Betrugsschutz ist eine v0-Heuristik — er senkt das Risiko, beseitigt es nicht. Die Botschaft ist immer „prüfe mit der Familie", nie „es ist sicher".</li>
+    <li>„Erfindet nie" heißt: <em>es weigert sich zu behaupten, was es nicht aus zwei Quellen bestätigen kann</em> — keine magische Wahrheitsgarantie.</li>
+  </ul>
+</section>
+<section class="warn es">
+  <h2>Qué NO es — dicho antes de que preguntes</h2>
+  <ul>
+    <li><strong>No es un producto terminado</strong> ni es para uso sin supervisión. Es un prototipo de arquitectura.</li>
+    <li><strong>No es médico.</strong> No da consejos médicos ni confirma dosis — remite al médico o al farmacéutico.</li>
+    <li>El escudo antiestafas es una heurística v0 — reduce el riesgo, no lo elimina. El mensaje es siempre «verifica con la familia», nunca «es seguro».</li>
+    <li>«Nunca inventa» significa que <em>se niega a afirmar lo que no puede confirmar desde dos fuentes</em> — no una garantía mágica de verdad.</li>
+  </ul>
+</section>
+<section class="warn it">
+  <h2>Che cosa NON è — detto prima che tu lo chieda</h2>
+  <ul>
+    <li><strong>Non è un prodotto finito</strong> e non è per uso non supervisionato. È un prototipo di architettura.</li>
+    <li><strong>Non è un medico.</strong> Niente consigli medici, nessuna conferma di dosi — rimanda al medico o al farmacista.</li>
+    <li>Lo scudo antitruffa è un'euristica v0 — riduce il rischio, non lo elimina. Il messaggio è sempre «verifica con la famiglia», mai «è sicuro».</li>
+    <li>«Non inventa mai» significa che <em>si rifiuta di affermare ciò che non può confermare da due fonti</em> — non una garanzia magica di verità.</li>
+  </ul>
+</section>
+<section class="warn fr">
+  <h2>Ce que ce N'EST PAS — dit avant que tu ne demandes</h2>
+  <ul>
+    <li><strong>Pas un produit fini</strong>, pas pour un usage sans surveillance. Un prototype d'architecture.</li>
+    <li><strong>Pas un médecin.</strong> Aucun conseil médical, aucune confirmation de dose — il oriente vers le médecin ou le pharmacien.</li>
+    <li>Le bouclier anti-arnaque est une heuristique v0 — il réduit le risque, il ne l'élimine pas. Le message est toujours « vérifie avec la famille », jamais « c'est sûr ».</li>
+    <li>« N'invente jamais » signifie qu'<em>il refuse d'affirmer ce qu'il ne peut pas confirmer par deux sources</em> — pas une garantie magique de vérité.</li>
+  </ul>
+</section>
 
 <section>
-  <h2><span class="ro">Confidențialitate — prin construcție</span><span class="en">Privacy — by design</span></h2>
+  <h2><span class="ro">Confidențialitate — prin construcție</span><span class="en">Privacy — by design</span><span class="de">Datenschutz — durch Konstruktion</span><span class="es">Privacidad — por diseño</span><span class="it">Privacy — by design</span><span class="fr">Confidentialité — par conception</span></h2>
   <p class="ro">Rulează local-first, în UE. Modelele procesează în Uniunea Europeană; vocea locală (pe serverul propriu) nu trimite nimic afară; jurnalul pentru familie e semnat criptografic și se activează <em>doar cu consimțământul persoanei</em>. Fără cont, fără date vândute.</p>
   <p class="en">Runs local-first, in the EU. Models process within the European Union; local voice (on your own server) sends nothing out; the family journal is cryptographically signed and turns on <em>only with the person's consent</em>. No account, no data sold.</p>
+  <p class="de">Läuft local-first, in der EU. Die Modelle verarbeiten innerhalb der Europäischen Union; die lokale Stimme (auf dem eigenen Server) sendet nichts nach außen; das Familienjournal ist kryptografisch signiert und wird <em>nur mit Einwilligung der Person</em> aktiviert. Kein Konto, keine verkauften Daten.</p>
+  <p class="es">Funciona local-first, en la UE. Los modelos procesan dentro de la Unión Europea; la voz local (en tu propio servidor) no envía nada fuera; el diario familiar está firmado criptográficamente y se activa <em>solo con el consentimiento de la persona</em>. Sin cuenta, sin datos vendidos.</p>
+  <p class="it">Funziona local-first, nell'UE. I modelli elaborano dentro l'Unione Europea; la voce locale (sul proprio server) non invia nulla all'esterno; il diario di famiglia è firmato crittograficamente e si attiva <em>solo con il consenso della persona</em>. Nessun account, nessun dato venduto.</p>
+  <p class="fr">Fonctionne en local-first, dans l'UE. Les modèles traitent au sein de l'Union européenne ; la voix locale (sur votre propre serveur) n'envoie rien à l'extérieur ; le journal familial est signé cryptographiquement et ne s'active <em>qu'avec le consentement de la personne</em>. Pas de compte, pas de données vendues.</p>
 </section>
 
 <section>
-  <h2><span class="ro">Pentru cine</span><span class="en">Who it's for</span></h2>
+  <h2><span class="ro">Pentru cine</span><span class="en">Who it's for</span><span class="de">Für wen</span><span class="es">Para quién</span><span class="it">Per chi</span><span class="fr">Pour qui</span></h2>
   <p class="ro">Pentru familiile din diasporă, ai căror părinți au rămas acasă. AmiDor le ține companie, îi ferește de escroci, și îți dă ție — copilul de departe — liniștea că cineva veghează, fără să-ți trimită viața lor privată.</p>
   <p class="en">For diaspora families whose parents stayed home. AmiDor keeps them company, shields them from scams, and gives you — the child far away — the peace of mind that someone is watching, without sending you their private life.</p>
+  <p class="de">Für Familien in der Diaspora, deren Eltern zu Hause geblieben sind. AmiDor leistet ihnen Gesellschaft, schützt sie vor Betrügern und gibt dir — dem Kind in der Ferne — die Ruhe, dass jemand wacht, ohne dir ihr Privatleben zu schicken.</p>
+  <p class="es">Para las familias de la diáspora cuyos padres se quedaron en casa. AmiDor les hace compañía, los protege de estafadores y te da a ti — el hijo que está lejos — la tranquilidad de que alguien vela, sin enviarte su vida privada.</p>
+  <p class="it">Per le famiglie della diaspora i cui genitori sono rimasti a casa. AmiDor fa loro compagnia, li protegge dai truffatori e dà a te — il figlio lontano — la serenità che qualcuno veglia, senza inviarti la loro vita privata.</p>
+  <p class="fr">Pour les familles de la diaspora dont les parents sont restés au pays. AmiDor leur tient compagnie, les protège des arnaques et te donne — à toi, l'enfant au loin — la tranquillité de savoir que quelqu'un veille, sans t'envoyer leur vie privée.</p>
 </section>
 
 <section>
-  <h2><span class="ro">Fundația verificabilă</span><span class="en">The verifiable foundation</span></h2>
+  <h2><span class="ro">Fundația verificabilă</span><span class="en">The verifiable foundation</span><span class="de">Die überprüfbare Grundlage</span><span class="es">La base verificable</span><span class="it">Le fondamenta verificabili</span><span class="fr">La fondation vérifiable</span></h2>
   <div class="grid">
-    <div class="card"><b>⚙️ <span class="ro">Motorul</span><span class="en">The engine</span></b><br>
-      <a href="https://github.com/amidigiart/amidor-engine">amidor-engine</a> · AGPL-3.0 / <span class="ro">comercial</span><span class="en">commercial</span></div>
-    <div class="card"><b>📄 <span class="ro">Ecuațiile</span><span class="en">The equations</span></b><br>
+    <div class="card"><b>⚙️ <span class="ro">Motorul</span><span class="en">The engine</span><span class="de">Die Engine</span><span class="es">El motor</span><span class="it">Il motore</span><span class="fr">Le moteur</span></b><br>
+      <a href="https://github.com/amidigiart/amidor-engine">amidor-engine</a> · AGPL-3.0 / <span class="ro">comercial</span><span class="en">commercial</span><span class="de">kommerziell</span><span class="es">comercial</span><span class="it">commerciale</span><span class="fr">commerciale</span></div>
+    <div class="card"><b>📄 <span class="ro">Ecuațiile</span><span class="en">The equations</span><span class="de">Die Gleichungen</span><span class="es">Las ecuaciones</span><span class="it">Le equazioni</span><span class="fr">Les équations</span></b><br>
       <a href="https://doi.org/10.5281/zenodo.21269201">DOI 10.5281/zenodo.21269201</a></div>
-    <div class="card"><b>🧩 <span class="ro">Familia de proiecte</span><span class="en">Project family</span></b><br>
+    <div class="card"><b>🧩 <span class="ro">Familia de proiecte</span><span class="en">Project family</span><span class="de">Projektfamilie</span><span class="es">Familia de proyectos</span><span class="it">Famiglia di progetti</span><span class="fr">Famille de projets</span></b><br>
       <a href="https://github.com/amidigiart/ukbe-core">ukbe-core</a> · <a href="https://kinderagi.com">kinderagi.com</a></div>
   </div>
 </section>
 
 <section>
-  <h2><span class="ro">Rulează-l singur</span><span class="en">Run it yourself</span></h2>
+  <h2><span class="ro">Rulează-l singur</span><span class="en">Run it yourself</span><span class="de">Selbst ausführen</span><span class="es">Ejecútalo tú mismo</span><span class="it">Eseguilo da solo</span><span class="fr">Exécute-le toi-même</span></h2>
   <pre>git clone https://github.com/amidigiart/amidor-engine
 cd amidor-engine && pip install -r requirements.txt
 pip install "ukbe-core @ git+https://github.com/amidigiart/ukbe-core@main"
 # Ollama (ollama.com) + un model, apoi:
 python app.py        # http://localhost:8124</pre>
-  <p class="ro">Server de familie cu HTTPS: <a href="https://github.com/amidigiart/amidor-engine/tree/main/deploy">ghidul de deploy</a> (Docker + Caddy, ~€8/lună, Hetzner UE).</p>
-  <p class="en">Family server with HTTPS: <a href="https://github.com/amidigiart/amidor-engine/tree/main/deploy">the deploy guide</a> (Docker + Caddy, ~€8/month, Hetzner EU).</p>
+  <p class="ro">Server de familie cu HTTPS: <a href="https://github.com/amidigiart/amidor-engine/tree/main/deploy">ghidul de deploy</a> (Docker + Caddy, VPS în UE).</p>
+  <p class="en">Family server with HTTPS: <a href="https://github.com/amidigiart/amidor-engine/tree/main/deploy">the deploy guide</a> (Docker + Caddy, EU VPS).</p>
+  <p class="de">Familienserver mit HTTPS: <a href="https://github.com/amidigiart/amidor-engine/tree/main/deploy">der Deploy-Guide</a> (Docker + Caddy, EU-VPS).</p>
+  <p class="es">Servidor familiar con HTTPS: <a href="https://github.com/amidigiart/amidor-engine/tree/main/deploy">la guía de despliegue</a> (Docker + Caddy, VPS en la UE).</p>
+  <p class="it">Server di famiglia con HTTPS: <a href="https://github.com/amidigiart/amidor-engine/tree/main/deploy">la guida al deploy</a> (Docker + Caddy, VPS UE).</p>
+  <p class="fr">Serveur familial avec HTTPS : <a href="https://github.com/amidigiart/amidor-engine/tree/main/deploy">le guide de déploiement</a> (Docker + Caddy, VPS UE).</p>
 </section>
 
 <footer>
-  <span class="ro">AmiDor — parte din amiecosystems · cod: AGPL-3.0 / licență comercială · Mihai Roșca, Brăila · <a href="mailto:contact@kinderagi.com">contact@kinderagi.com</a></span>
-  <span class="en">AmiDor — part of amiecosystems · code: AGPL-3.0 / commercial license · Mihai Roșca, Brăila · <a href="mailto:contact@kinderagi.com">contact@kinderagi.com</a></span>
+  <span class="ro">AmiDor — parte din amiecosystems · cod: AGPL-3.0 / licență comercială · Mihai Roșca, Brăila, România · <a href="mailto:contact@kinderagi.com">contact@kinderagi.com</a></span>
+  <span class="en">AmiDor — part of amiecosystems · code: AGPL-3.0 / commercial license · Mihai Roșca, Brăila, Romania · <a href="mailto:contact@kinderagi.com">contact@kinderagi.com</a></span>
+  <span class="de">AmiDor — Teil von amiecosystems · Code: AGPL-3.0 / kommerzielle Lizenz · Mihai Roșca, Brăila, Rumänien · <a href="mailto:contact@kinderagi.com">contact@kinderagi.com</a></span>
+  <span class="es">AmiDor — parte de amiecosystems · código: AGPL-3.0 / licencia comercial · Mihai Roșca, Brăila, Rumanía · <a href="mailto:contact@kinderagi.com">contact@kinderagi.com</a></span>
+  <span class="it">AmiDor — parte di amiecosystems · codice: AGPL-3.0 / licenza commerciale · Mihai Roșca, Brăila, Romania · <a href="mailto:contact@kinderagi.com">contact@kinderagi.com</a></span>
+  <span class="fr">AmiDor — partie d'amiecosystems · code : AGPL-3.0 / licence commerciale · Mihai Roșca, Brăila, Roumanie · <a href="mailto:contact@kinderagi.com">contact@kinderagi.com</a></span>
 </footer>
 </div>
 
 <script>
+const LANGS=['ro','en','de','es','it','fr'];
 function setLang(l){
-  document.body.className = l==='en' ? 'lang-en' : '';
-  document.getElementById('bro').className = l==='ro' ? 'on' : '';
-  document.getElementById('ben').className = l==='en' ? 'on' : '';
+  if(LANGS.indexOf(l)<0)l='ro';
+  document.body.className = l==='ro' ? '' : 'lang-'+l;
+  for(const x of LANGS){
+    const b=document.getElementById('b'+x);
+    if(b)b.className = x===l ? 'on' : '';
+  }
   document.documentElement.lang = l;
   try{localStorage.setItem('amidorai_lang', l)}catch(e){}
 }
-try{if(localStorage.getItem('amidorai_lang')==='en')setLang('en');}catch(e){}
+try{const s=localStorage.getItem('amidorai_lang'); if(s&&s!=='ro')setLang(s);}catch(e){}
 </script>
 </body>
 </html>
