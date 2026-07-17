@@ -14,7 +14,10 @@ python monitor/monitor_app.py     # http://localhost:8125
 ## NDA-gated demo
 Set `MONITOR_ACCESS_CODE` to require a code (`/monitor/state?code=…`). The source
 is AGPL-3.0 / commercial (see ../COMMERCIAL.md); **access to a running demo
-instance is granted under NDA** — contact contact@kinderagi.com.
+instance is granted under NDA** — the ready-to-sign template (RO/EN, with the
+access-code flow) is at [../legal/NDA-DEMO.md](../legal/NDA-DEMO.md); contact
+contact@kinderagi.com. The engine behind the panel is `ScaleEngine` (O(N)) at
+N=10,000 by default.
 
 *Not Linux (not everything free), not a closed extractor either — open-core with
 a protected value layer and NDA demos.*

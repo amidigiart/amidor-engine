@@ -28,6 +28,11 @@ support and calibration know-how (thresholds, reliability weights, scam patterns
 **To obtain one:** contact **contact@kinderagi.com**. Terms are per-deployment /
 per-year, negotiated to the use case.
 
+**Want to see it running first?** Live demos (including the `/monitor` panel
+with the production ScaleEngine at N=10,000) are granted under NDA — the
+ready-to-sign bilingual template with the access-code flow is
+[legal/NDA-DEMO.md](legal/NDA-DEMO.md).
+
 ---
 
 ## What is and isn't ownable (stated plainly)
