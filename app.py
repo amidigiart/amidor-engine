@@ -120,7 +120,14 @@ def _log(entry: dict):
         f.write(json.dumps({"entry": entry, "record": rec.to_dict()}, ensure_ascii=False) + "\n")
 
 
-app = FastAPI(title="AmiDor", version="0.7.0")
+_is_prod = os.environ.get("RAILWAY_ENVIRONMENT") or os.environ.get("AMIDOR_ENV") == "prod"
+
+app = FastAPI(
+    title="AmiDor", version="0.7.0",
+    docs_url=None if _is_prod else "/docs",
+    redoc_url=None if _is_prod else "/redoc",
+    openapi_url=None if _is_prod else "/openapi.json",
+)
 
 # Panou admin: monitorul REAI live montat sub /monitor (sursa in monitor/, seif).
 # Gated de MONITOR_ACCESS_CODE (demo prin NDA). Dovada vie ca motorul se aliniaza.
@@ -147,6 +154,8 @@ def family_ui():
 
 @app.get("/api/health")
 def health():
+    if _is_prod:
+        return {"status": "ok", "version": "0.7.0"}
     return {"service": "amidor", "version": "0.7.0",
             "engine": ("ensemble (WEAC) " if len(MODELS) >= 3 else "dual ") +
                       f"anti-confabulation + REAI gate · {len(MODELS)} models",
