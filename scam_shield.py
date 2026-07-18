@@ -43,6 +43,18 @@ _STRONG = {
         r"\bcvv\b", r"\bpin(ul)?\b.{0,15}\bcard",
         r"\bnumar(ul)?\b.{0,10}\bcard",
         r"\bone[- ]?time\b", r"\bverification code\b", r"\bcard number\b",
+        # FR
+        r"\bcode\b.{0,20}\b(sms|otp|carte|banque|v[ée]rification)\b",
+        r"\bnum[ée]ro de carte\b",
+        # DE
+        r"\bcode\b.{0,20}\b(sms|otp|karte|bank|verifizierung)\b",
+        r"\bkartennummer\b",
+        # IT
+        r"\bcodice\b.{0,20}\b(sms|otp|carta|banca|verifica)\b",
+        r"\bnumero (?:di |della )?carta\b",
+        # ES
+        r"\bc[oó]digo\b.{0,20}\b(sms|otp|tarjeta|banco|verificaci[oó]n)\b",
+        r"\bn[uú]mero de tarjeta\b",
     ],
     "transfer_bani": [
         r"\btrimite\b.{0,25}\b(bani|suma|lei|euro|transfer)\b",
@@ -50,34 +62,101 @@ _STRONG = {
         r"\brevolut\b|\bwestern union\b|\bmoneygram\b",
         r"\b(crypto|bitcoin|cont)\b.{0,20}\b(transfer|trimite|depune)\b",
         r"\bcard(uri)? cadou\b|\bgift card", r"\bsend\b.{0,20}\bmoney\b",
+        # FR
+        r"\benvoy(er|ez)\b.{0,25}\b(argent|somme|euros?|virement)\b",
+        r"\bvirement\b.{0,20}\b(urgent|imm[ée]diat|maintenant)\b",
+        # DE
+        r"\b[uü]berweisen\b.{0,25}\b(geld|betrag|euro|sofort)\b",
+        r"\b[uü]berweisung\b.{0,20}\b(dringend|sofort|jetzt)\b",
+        # IT
+        r"\binvi(are|a)\b.{0,25}\b(soldi|denaro|euro|bonifico)\b",
+        r"\bbonifico\b.{0,20}\b(urgente|subito|immediatamente)\b",
+        # ES
+        r"\benvi(ar|e)\b.{0,25}\b(dinero|suma|euros?|transferencia)\b",
+        r"\btransferencia\b.{0,20}\b(urgente|ahora|inmediatamente)\b",
     ],
     "autoritate_falsa": [
         r"\b(sunt|aici|din partea)\b.{0,25}\b(banca|bank|politie|police|anaf|primaria|microsoft|amazon)\b",
         r"\b(agent|inspector|ofiter|reprezentant)\b.{0,20}\b(banca|politie|fisc|securitate)\b",
         r"\bcontul (tau|dvs).{0,20}\b(blocat|compromis|suspendat|piratat)\b",
         r"\byour account\b.{0,15}\b(blocked|suspended|compromised)\b",
+        # FR
+        r"\b(je suis|ici|de la part)\b.{0,25}\b(banque|police|imp[oô]ts|gendarmerie|microsoft|amazon)\b",
+        r"\bvotre compte\b.{0,15}\b(bloqu[ée]|compromis|suspendu|pirat[ée])\b",
+        # DE
+        r"\b(ich bin|hier ist|im auftrag)\b.{0,25}\b(bank|polizei|finanzamt|microsoft|amazon)\b",
+        r"\bihr konto\b.{0,15}\b(gesperrt|kompromittiert|gehackt)\b",
+        # IT
+        r"\b(sono|qui|da parte)\b.{0,25}\b(banca|polizia|agenzia entrate|microsoft|amazon)\b",
+        r"\bil (?:suo|vostro) conto\b.{0,15}\b(bloccato|compromesso|sospeso)\b",
+        # ES
+        r"\b(soy|aqu[ií]|de parte)\b.{0,25}\b(banco|polic[ií]a|hacienda|microsoft|amazon)\b",
+        r"\bsu cuenta\b.{0,15}\b(bloqueada|comprometida|suspendida)\b",
     ],
     "ruda_criza": [
         r"\b(nepot|nepotul|fiul|fiica|copilul)\b.{0,30}\b(accident|spital|arestat|inchisoare|probleme|urgent)\b",
         r"\bam avut un accident\b.{0,30}\b(bani|trimite|urgent)\b",
         r"\bgrandson\b.{0,30}\b(hospital|accident|jail|money)\b",
+        # FR
+        r"\b(petit-fils|fils|fille|enfant)\b.{0,30}\b(accident|h[oô]pital|arr[êe]t[ée]|prison|urgence)\b",
+        # DE
+        r"\b(enkel|sohn|tochter|kind)\b.{0,30}\b(unfall|krankenhaus|verhaftet|gef[aä]ngnis|dringend)\b",
+        # IT
+        r"\b(nipote|figlio|figlia|bambino)\b.{0,30}\b(incidente|ospedale|arrestat[oa]|prigione|urgente)\b",
+        # ES
+        r"\b(nieto|hijo|hija|ni[ñn]o)\b.{0,30}\b(accidente|hospital|arrestado|c[aá]rcel|urgente)\b",
     ],
 }
 _WEAK = {
-    # urgenta si secret sunt semnale SEPARATE: impreuna = tiparul clasic -> LIKELY
     "urgenta": [
         r"\b(chiar )?acum\b.{0,15}\b(imediat|urgent|repede)\b",
         r"\bimediat\b|\burgent\b", r"\bin urmatoarele (\d+ )?(minute|ore)\b",
         r"\bnow\b.{0,12}\b(immediately|urgent|quickly)\b",
+        # FR
+        r"\bimm[ée]diatement\b|\burgent\b|\btout de suite\b",
+        r"\bdans les prochaines (\d+ )?(minutes|heures)\b",
+        # DE
+        r"\bsofort\b|\bdringend\b|\bunverz[uü]glich\b",
+        r"\bin den n[aä]chsten (\d+ )?(minuten|stunden)\b",
+        # IT
+        r"\bimmediatamente\b|\burgente\b|\bsubito\b",
+        r"\bnei prossimi (\d+ )?(minuti|ore)\b",
+        # ES
+        r"\binmediatamente\b|\burgente\b|\bahora mismo\b",
+        r"\ben los pr[oó]ximos (\d+ )?(minutos|horas)\b",
     ],
     "secret": [
         r"\bnu spune(ti)? nimanui\b", r"\bpastreaza secret\b|\bsa ramana intre noi\b",
         r"\bdo(n'?t| not) tell anyone\b", r"\bkeep (it|this) secret\b",
+        # FR
+        r"\bne (?:dites?|parlez?) [àa] personne\b", r"\bgardez (?:le |cela )?secret\b",
+        r"\bentre nous\b|\bconfidentiel\b",
+        # DE
+        r"\bsagen sie niemandem\b|\berz[aä]hl(?:e|en sie) (?:es )?niemandem\b",
+        r"\bgeheim halten\b|\bvertraulich\b",
+        # IT
+        r"\bnon (?:dire|dica) a nessuno\b", r"\btenga(?:lo)? segreto\b",
+        r"\btra (?:noi|di noi)\b|\briservato\b",
+        # ES
+        r"\bno (?:le )?(?:digas?|cuentes?) a nadie\b", r"\bmant[ée]n(?:galo|lo) en secreto\b",
+        r"\bentre nosotros\b|\bconfidencial\b",
     ],
     "premiu_neasteptat": [
         r"\bai castigat\b|\bfelicitari\b.{0,20}\bcastig",
         r"\bmostenire\b.{0,25}\b(neasteptata|strain|taxa)\b",
         r"\byou('?ve)? won\b|\binheritance\b.{0,20}\bfee\b",
+        # FR
+        r"\bvous avez gagn[ée]\b|\bf[ée]licitations\b.{0,20}\bgagn",
+        r"\bh[ée]ritage\b.{0,25}\b(inattendu|frais|taxe)\b",
+        # DE
+        r"\bsie haben gewonnen\b|\bherzlichen gl[uü]ckwunsch\b.{0,20}\bgewinn",
+        r"\berbschaft\b.{0,25}\b(unerwartet|geb[uü]hr|steuer)\b",
+        # IT
+        r"\bhai vinto\b|\bcongratulazioni\b.{0,20}\bvint",
+        r"\beredit[àa]\b.{0,25}\b(inaspettat[oa]|tassa|costo)\b",
+        # ES
+        r"\bhas ganado\b|\bfelicidades\b.{0,20}\bganad",
+        r"\bherencia\b.{0,25}\b(inesperada|tarifa|impuesto)\b",
     ],
 }
 
